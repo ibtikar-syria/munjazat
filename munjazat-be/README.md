@@ -1,21 +1,24 @@
-```txt
+# Munjazat Backend
+
+Hono API on Cloudflare Workers with D1, R2, and KV.
+
+## Local setup
+
+```bash
 npm install
+npm run db:migrate:local
 npm run dev
 ```
 
-```txt
-npm run deploy
-```
+API listens on `http://127.0.0.1:8787`.
 
-[For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
+### Useful endpoints
 
-```txt
-npm run cf-typegen
-```
+- `GET /api/health`
+- `POST /api/auth/bootstrap-admin` (dev only)
+- `POST /api/auth/login`
+- `POST /api/taxonomies/seed` (admin)
+- `POST /api/submissions`
+- `GET /api/dashboard/summary` (auth)
 
-Pass the `CloudflareBindings` as generics when instantiating `Hono`:
-
-```ts
-// src/index.ts
-const app = new Hono<{ Bindings: CloudflareBindings }>()
-```
+Default admin after bootstrap: `admin@munjazat.local` / `Admin123!`
