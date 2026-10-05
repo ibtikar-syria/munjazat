@@ -1,12 +1,6 @@
 name: (main) [database-migrations] Migrate D1 Databases
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'munjazat-be/migrations/**'
-      - '.github/workflows/db-main.yml'
   workflow_dispatch:
 
 jobs:
