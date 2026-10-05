@@ -47,7 +47,7 @@ jobs:
             --arg dbid "${{ vars.MUNJAZAT_DB_ID }}" \
             --arg dbname "${{ vars.MUNJAZAT_DB_NAME }}" \
             --arg bucketname "${{ vars.BUCKET_NAME }}" \
-            --arg appName "${{ vars.APP_NAME }}" \
+            --arg appName "${{ vars.THIS_APP_NAME_BE }}" \
             --arg frontendBaseUrl "${{ vars.FRONTEND_BASE_URL }}" \
             --arg corsAllowOrigins "${{ vars.CORS_ALLOW_ORIGINS }}" \
             --arg accountId "${{ vars.CLOUDFLARE_ACCOUNT_ID }}" \
@@ -57,13 +57,13 @@ jobs:
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: wrangler deploy --config wrangler.local.jsonc --name munjazat-be-dev
+        run: wrangler deploy --config wrangler.local.jsonc --name ${{ vars.THIS_APP_NAME_BE }}
 
       - name: Set secrets in Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          echo "${{ secrets.SESSION_SECRET }}" | wrangler secret put SESSION_SECRET --config wrangler.local.jsonc --name munjazat-be-dev
+          echo "${{ secrets.SESSION_SECRET }}" | wrangler secret put SESSION_SECRET --config wrangler.local.jsonc --name ${{ vars.THIS_APP_NAME_BE }}
 
       - name: Migrate D1 Database
         env:
