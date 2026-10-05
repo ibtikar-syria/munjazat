@@ -36,20 +36,17 @@ jobs:
           jq_filter='.d1_databases[0].database_id = $dbid
           | .d1_databases[0].database_name = $dbname
           | .r2_buckets[0].bucket_name = $bucketname
-          | .kv_namespaces[0].id = $sessionsKvId
           | .vars.APP_NAME = $appName
-          | .vars.ENVIRONMENT = $environment
           | .vars.FRONTEND_BASE_URL = $frontendBaseUrl
           | .vars.CORS_ALLOW_ORIGINS = $corsAllowOrigins
-          | .account_id = $accountId'
+          | .account_id = $accountId
+          | del(.kv_namespaces)'
 
           jq \
             --arg dbid "${{ vars.MUNJAZAT_DB_ID }}" \
             --arg dbname "${{ vars.MUNJAZAT_DB_NAME }}" \
             --arg bucketname "${{ vars.BUCKET_NAME }}" \
-            --arg sessionsKvId "${{ vars.SESSIONS_KV_ID }}" \
             --arg appName "${{ vars.APP_NAME }}" \
-            --arg environment "${{ vars.ENVIRONMENT }}" \
             --arg frontendBaseUrl "${{ vars.FRONTEND_BASE_URL }}" \
             --arg corsAllowOrigins "${{ vars.CORS_ALLOW_ORIGINS }}" \
             --arg accountId "${{ vars.CLOUDFLARE_ACCOUNT_ID }}" \

@@ -196,10 +196,6 @@ catalogRoutes.get('/stats', async (c) => {
 
 /** Dev helper: seed a few published records so the public directory is browsable */
 catalogRoutes.post('/seed-demo', async (c) => {
-  if (c.env.ENVIRONMENT === 'production') {
-    return c.json({ error: 'غير متاح في الإنتاج' }, 403)
-  }
-
   const db = createDb(c.env.DB)
   const cityRows = await db.select().from(cities).limit(10)
   if (cityRows.length === 0) {

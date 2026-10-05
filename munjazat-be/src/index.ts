@@ -36,7 +36,6 @@ app.get('/api/health', (c) =>
   c.json({
     ok: true,
     app: c.env.APP_NAME ?? 'منجزات',
-    environment: c.env.ENVIRONMENT ?? 'development',
   }),
 )
 

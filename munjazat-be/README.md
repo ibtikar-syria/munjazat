@@ -1,6 +1,6 @@
 # Munjazat Backend
 
-Hono API on Cloudflare Workers with D1, R2, and KV.
+Hono API on Cloudflare Workers with D1 and R2.
 
 ## Local setup
 

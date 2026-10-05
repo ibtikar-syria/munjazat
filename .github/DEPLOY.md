@@ -22,14 +22,14 @@ Create GitHub Environments: `dev` and `main`.
 | `MUNJAZAT_DB_ID` | D1 database id |
 | `MUNJAZAT_DB_NAME` | D1 database name (e.g. `munjazat`) |
 | `BUCKET_NAME` | R2 evidence bucket name |
-| `SESSIONS_KV_ID` | KV namespace id for sessions |
 | `APP_NAME` | `منجزات` |
-| `ENVIRONMENT` | `development` or `production` |
 | `FRONTEND_BASE_URL` | Public site URL |
 | `CORS_ALLOW_ORIGINS` | Comma-separated origins allowed by API |
 | `VITE_MUNJAZAT_MS` | Public API base URL baked into frontend (like VMS `VITE_MEMBER_MS`) |
 | `VITE_BASE_PATH` | Usually `/` |
 | `VITE_SITE_URL` | Canonical frontend URL |
+
+No `ENVIRONMENT` var and no KV namespace are required.
 
 ## Dev worker names (hardcoded like VMS)
 

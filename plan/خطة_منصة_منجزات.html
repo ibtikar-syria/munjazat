@@ -225,8 +225,7 @@
       <tr><td>الواجهة</td><td>Vite + React على Cloudflare Pages</td><td>بوابة ولوحات بدون Next.js</td></tr>
       <tr><td>واجهة الاستخدام</td><td>Tailwind + shadcn/ui + RTL</td><td>أنماط إدارة ناضجة ودعم عربي أصيل</td></tr>
       <tr><td>قاعدة البيانات</td><td>Cloudflare D1 + Drizzle ORM</td><td>SQL علائقي داخل منظومة Cloudflare</td></tr>
-      <tr><td>جلسات/كاش</td><td>Cloudflare KV (اختياري)</td><td>جلسات ورموز تتبع وحدّ المعدّل</td></tr>
-      <tr><td>المصادقة</td><td>جلسات D1 + دعوة/رابط سحري</td><td>موظفين بدعوة وتتبع للمقدّمين</td></tr>
+      <tr><td>المصادقة</td><td>جلسات D1 + دعوة/رابط سحري</td><td>موظفين بدعوة؛ بدون KV حالياً</td></tr>
       <tr><td>الملفات</td><td>Cloudflare R2</td><td>شواهد ومستندات</td></tr>
       <tr><td>البحث</td><td>FTS5 في D1</td><td>كافٍ للنسخة الأولى</td></tr>
       <tr><td>الخرائط</td><td>MapLibre + OSM</td><td>خرائط قطاعية/جغرافية</td></tr>
@@ -313,7 +312,7 @@
   <p>تأسيس المستودع (Vite/React على Pages، Hono على Workers، Drizzle/D1، ربط R2، الجلسات والدعوات، هيكل عربي RTL) وتنفيذ صدفة الحوكمة للشهر الأول قبل بناء معالج التقديم العام.</p>
 
   <h3>نشر CI/CD (GitHub Actions)</h3>
-  <p>مقتبس من نمط ibtikar-org-tr/vms: بيئات GitHub <strong>dev</strong> و <strong>main</strong>؛ مسارات backend/frontend/db؛ أسماء التطوير <code>munjazat-be-dev</code> / <code>munjazat-fe-dev</code>؛ في الإنتاج <code>THIS_APP_NAME_BE</code> / <code>THIS_APP_NAME_FE</code>؛ أسرار <code>CLOUDFLARE_API_TOKEN</code> و <code>SESSION_SECRET</code>؛ ومتغيرات مثل <code>MUNJAZAT_DB_ID</code> و <code>BUCKET_NAME</code> و <code>VITE_MUNJAZAT_MS</code> و <code>FRONTEND_BASE_URL</code> و <code>CORS_ALLOW_ORIGINS</code>. التفاصيل في <code>.github/DEPLOY.md</code>.</p>
+  <p>مقتبس من نمط ibtikar-org-tr/vms: بيئات GitHub <strong>dev</strong> و <strong>main</strong>؛ مسارات backend/frontend/db؛ أسماء التطوير <code>munjazat-be-dev</code> / <code>munjazat-fe-dev</code>؛ في الإنتاج <code>THIS_APP_NAME_BE</code> / <code>THIS_APP_NAME_FE</code>؛ أسرار <code>CLOUDFLARE_API_TOKEN</code> و <code>SESSION_SECRET</code>؛ ومتغيرات مثل <code>MUNJAZAT_DB_ID</code> و <code>BUCKET_NAME</code> و <code>VITE_MUNJAZAT_MS</code> و <code>FRONTEND_BASE_URL</code> و <code>CORS_ALLOW_ORIGINS</code>. لا يُستخدم <code>ENVIRONMENT</code> ولا KV. التفاصيل في <code>.github/DEPLOY.md</code>.</p>
 
   <h2>15. سجل تعديلات التنفيذ على الخطة</h2>
   <table>
@@ -332,6 +331,14 @@
       <tr>
         <td>2026-10-06</td>
         <td>إضافة GitHub Actions (backend/frontend/db × dev/main) بنمط VMS مع أسماء متغيرات مشابهة (CLOUDFLARE_*, THIS_APP_NAME_*, VITE_MUNJAZAT_MS، …)</td>
+      </tr>
+      <tr>
+        <td>2026-10-06</td>
+        <td>إزالة متغير ENVIRONMENT وإزالة Cloudflare KV من المكدس والنشر</td>
+      </tr>
+      <tr>
+        <td>2026-10-06</td>
+        <td>تبسيط أدوات التهيئة (bootstrap/seed) بدون بوابات بيئة معقّدة</td>
       </tr>
     </tbody>
   </table>

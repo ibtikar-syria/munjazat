@@ -7,9 +7,9 @@
   "account_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "vars": {
     "APP_NAME": "منجزات",
-    "ENVIRONMENT": "development",
     "FRONTEND_BASE_URL": "http://localhost:5173",
-    "CORS_ALLOW_ORIGINS": "http://localhost:5173"
+    "CORS_ALLOW_ORIGINS": "http://localhost:5173",
+    "SESSION_SECRET": "delete-on-deployment"
   },
   "d1_databases": [
     {
@@ -23,12 +23,6 @@
     {
       "binding": "EVIDENCE",
       "bucket_name": "munjazat-evidence"
-    }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "SESSIONS",
-      "id": "00000000-0000-0000-0000-000000000002"
     }
   ],
   "observability": {

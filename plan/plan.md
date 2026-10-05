@@ -118,8 +118,7 @@
 | الواجهة (Frontend) | **Vite + React** على **Cloudflare Pages** + TypeScript | بوابة عامة ولوحات إدارة كواجهة SPA/SSR خفيفة بدون Next.js |
 | واجهة الاستخدام | Tailwind CSS + shadcn/ui مع `dir="rtl"` | أنماط إدارة ناضجة ودعم عربي أصيل |
 | قاعدة البيانات | **Cloudflare D1** + **Drizzle ORM** | SQL علائقي مُدار داخل Cloudflare؛ ترحيلات بسيطة وملائمة لـ Workers |
-| الجلسات / كاش خفيف | **Cloudflare KV** (اختياري) | جلسات، رموز تتبع، وحدّ معدّل الطلبات |
-| المصادقة | جلسات في D1 + دعوة بالبريد / رابط سحري (Lucia أو Better Auth بتكييف Workers) | حسابات موظفين بدعوة؛ تتبع للمقدّمين دون اعتماد على Vercel/Auth.js |
+| المصادقة | جلسات في **D1** + دعوة بالبريد / رابط سحري | حسابات موظفين بدعوة؛ تتبع للمقدّمين — بدون KV حالياً |
 | الملفات | **Cloudflare R2** | شواهد ومستندات بنفس منظومة Cloudflare |
 | البحث | FTS5 داخل D1 (+ فهارس عادية) | كافٍ للنسخة الأولى دون خدمة بحث خارجية |
 | الخرائط | MapLibre + OpenStreetMap | خرائط قطاعية/جغرافية دون تكلفة Mapbox |
@@ -233,6 +232,8 @@ munjazat/
 | 2026-10-06 | نقل «دخول الموظفين» إلى التذييل؛ بناء تذييل مؤسسي؛ تحسين الواجهة العامة/الداخلية والاستجابة للجوال؛ مزامنة PDF مع الخطة |
 | 2026-10-06 | إضافة تصفّح عام للمنجزات المنشورة (`/browse` + API `/api/catalog`) مع بحث/مدينة وتبويبات كفاءات وجهات |
 | 2026-10-06 | إضافة GitHub Actions (backend/frontend/db × dev/main) بنمط VMS مع أسماء متغيرات مشابهة (`CLOUDFLARE_*`, `THIS_APP_NAME_*`, `VITE_MUNJAZAT_MS`, …) |
+| 2026-10-06 | إزالة متغير `ENVIRONMENT` وإزالة Cloudflare KV من المكدس والنشر |
+| 2026-10-06 | تبسيط أدوات التهيئة (bootstrap/seed) بدون بوابات بيئة معقّدة |
 
 ### نشر CI/CD (GitHub Actions)
 
@@ -243,7 +244,8 @@ munjazat/
 - أسماء العمال في التطوير: `munjazat-be-dev` / `munjazat-fe-dev`
 - في الإنتاج: `THIS_APP_NAME_BE` / `THIS_APP_NAME_FE`
 - أسرار: `CLOUDFLARE_API_TOKEN`, `SESSION_SECRET`
-- متغيرات أساسية: `CLOUDFLARE_ACCOUNT_ID`, `MUNJAZAT_DB_ID`, `MUNJAZAT_DB_NAME`, `BUCKET_NAME`, `SESSIONS_KV_ID`, `FRONTEND_BASE_URL`, `CORS_ALLOW_ORIGINS`, `VITE_MUNJAZAT_MS`, `VITE_BASE_PATH`, `VITE_SITE_URL`
+- متغيرات أساسية: `CLOUDFLARE_ACCOUNT_ID`, `MUNJAZAT_DB_ID`, `MUNJAZAT_DB_NAME`, `BUCKET_NAME`, `FRONTEND_BASE_URL`, `CORS_ALLOW_ORIGINS`, `VITE_MUNJAZAT_MS`, `VITE_BASE_PATH`, `VITE_SITE_URL`
+- لا يُستخدم متغير `ENVIRONMENT` ولا Cloudflare KV في المرحلة الحالية
 - التفاصيل: [`.github/DEPLOY.md`](../.github/DEPLOY.md)
 
 **قاعدة التحديث:** بعد كل طلب تعديل على المنتج تُحدَّث معاً: `plan/plan.md` + `plan/خطة_منصة_منجزات.html` + `plan/خطة_منصة_منجزات.pdf` (عبر `npm run pdf` داخل مجلد `plan`).
