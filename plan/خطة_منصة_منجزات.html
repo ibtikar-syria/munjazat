@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>منجزات — خطة منصة توثيق منجزات السوريين في تركيا</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 20mm 16mm;
+      @bottom-center {
+        content: "منجزات — خطة المنصة | صفحة " counter(page);
+        font-family: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
+        font-size: 9pt;
+        color: #5c6570;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Noto Naskh Arabic", "Noto Sans Arabic", "FreeSerif", serif;
+      font-size: 11pt;
+      line-height: 1.75;
+      color: #1a2330;
+      direction: rtl;
+      text-align: right;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    h1 {
+      font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+      font-size: 20pt;
+      font-weight: 700;
+      color: #0b3d2e;
+      margin: 0 0 8pt;
+      line-height: 1.4;
+    }
+    h2 {
+      font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+      font-size: 13.5pt;
+      font-weight: 700;
+      color: #0b3d2e;
+      margin: 22pt 0 8pt;
+      padding-bottom: 4pt;
+      border-bottom: 2px solid #c5a46e;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+      font-size: 11.5pt;
+      color: #1f4d3a;
+      margin: 14pt 0 6pt;
+      page-break-after: avoid;
+    }
+    p { margin: 0 0 8pt; }
+    ul, ol { margin: 0 0 10pt; padding-right: 22pt; padding-left: 0; }
+    li { margin-bottom: 4pt; }
+    .meta {
+      background: #f4f7f5;
+      border: 1px solid #d7e0da;
+      border-right: 4px solid #0b3d2e;
+      padding: 10pt 12pt;
+      margin: 10pt 0 18pt;
+      font-size: 10pt;
+      color: #334155;
+    }
+    .meta strong { color: #0b3d2e; }
+    .cover-sub {
+      color: #5c6570;
+      font-size: 10.5pt;
+      margin-bottom: 4pt;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8pt 0 14pt;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cfd8d3;
+      padding: 6pt 8pt;
+      vertical-align: top;
+      text-align: right;
+    }
+    th {
+      background: #0b3d2e;
+      color: #fff;
+      font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: #f7faf8; }
+    .flow {
+      background: #f8f5ef;
+      border: 1px solid #e4d7bf;
+      padding: 10pt 12pt;
+      font-family: "Noto Sans Arabic", sans-serif;
+      font-size: 10pt;
+      white-space: pre-wrap;
+      margin: 8pt 0 12pt;
+      line-height: 1.6;
+    }
+    .code {
+      background: #f1f5f9;
+      border: 1px solid #dbe3ea;
+      padding: 10pt 12pt;
+      font-family: ui-monospace, monospace;
+      font-size: 9pt;
+      direction: ltr;
+      text-align: left;
+      white-space: pre;
+      margin: 8pt 0 12pt;
+    }
+    .note {
+      margin-top: 18pt;
+      padding-top: 10pt;
+      border-top: 1px solid #d7e0da;
+      font-size: 9.5pt;
+      color: #5c6570;
+      font-style: italic;
+    }
+    strong { color: #0b3d2e; }
+  </style>
+</head>
+<body>
+
+  <h1>منجزات — خطة منصة توثيق منجزات السوريين في تركيا</h1>
+  <p class="cover-sub">وثيقة تخطيط منتج وتقني</p>
+  <div class="meta">
+    <div><strong>التاريخ:</strong> 1 تشرين الأول / أكتوبر 2026</div>
+    <div><strong>النطاق:</strong> عموم تركيا | <strong>الإشراف المقترح:</strong> البعثة الدبلوماسية السورية في تركيا</div>
+    <div><strong>نموذج الوصول:</strong> هجين (تقديم عام + مراجعة داخلية) | <strong>الاستضافة:</strong> Cloudflare (Workers / Pages / D1 / R2)</div>
+  </div>
+
+  <h2>1. الملخص التنفيذي</h2>
+  <p>يطرح المقترح الأصلي بناء ذاكرة مؤسسية حول الحضور السوري في تركيا: أفراد، كيانات، ومنجزات. الجداول اليدوية واللجان الورقية لا تكفي لتغطية أنقرة وإسطنبول وغازي عنتاب، ولا تنتج مؤشرات حية وتقارير دورية قابلة للاستخدام الدبلوماسي.</p>
+  <p><strong>منجزات</strong> منصة ويب هجينة تحوّل هذا التصور إلى نظام برمجي يحقق:</p>
+  <ol>
+    <li>تمكين الجمهور وشبكة الميدان من <strong>تقديم</strong> بيانات الأشخاص والمؤسسات والمنجزات مع الشواهد.</li>
+    <li>تمكين نقاط الاتصال واللجنة الأساسية من <strong>التحقق والتصنيف والاعتماد</strong> عبر مسار حوكمة واضح.</li>
+    <li>تمكين القيادة من <strong>لوحة مؤشرات</strong> (خرائط، قطاعات، أدلة، وتقارير قابلة للتصدير).</li>
+  </ol>
+  <p>القراران المعتمدان في هذه الخطة: <strong>وصول هجين</strong> و<strong>استضافة على مكدس Cloudflare</strong> (بدون Vercel/Next.js).</p>
+
+  <h2>2. المشكلة والحل</h2>
+  <table>
+    <thead>
+      <tr><th>الجانب</th><th>الوضع بدون منصة</th><th>الحل عبر منجزات</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>جمع البيانات</td><td>متفرق وغير موحّد</td><td>نموذج تقديم موحّد متعدد الخطوات</td></tr>
+      <tr><td>التحقق</td><td>يدوي وبلا أثر تدقيقي</td><td>مسار حالات + سجل تدقيق كامل</td></tr>
+      <tr><td>التصنيف</td><td>غير ثابت</td><td>تصنيفات قابلة للإدارة (قطاع، مدينة، نوع جهة…)</td></tr>
+      <tr><td>الاستفادة</td><td>صعوبة استخراج مؤشرات</td><td>لوحات وتحليلات وتقارير PDF/Excel</td></tr>
+      <tr><td>التوسع</td><td>يرتبط باللجنة فقط</td><td>قابل لاحقاً لتعميمه على بعثات أخرى</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. واجهات المنتج</h2>
+  <table>
+    <thead>
+      <tr><th>الواجهة</th><th>الجمهور</th><th>الغرض</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>البوابة العامة</td><td>الجالية والشركاء</td><td>تعريف المشروع، طريقة التقديم، دليل السجلات المنشورة</td></tr>
+      <tr><td>معالج التقديم</td><td>أفراد / مؤسسات / متطوعون</td><td>إدخال منظم لشخص أو جهة أو منجز + مرفقات</td></tr>
+      <tr><td>كونسول نقطة الاتصال</td><td>أنقرة / إسطنبول / غازي عنتاب</td><td>فرز أولي، ملكية جغرافية، إحالة للجنة</td></tr>
+      <tr><td>مساحة عمل اللجنة</td><td>اللجنة الأساسية + الخبراء</td><td>تحقق معمق، تصنيف، وسم شراكات، نشر/رفض</td></tr>
+      <tr><td>إدارة البعثة</td><td>قيادة البعثة</td><td>المستخدمون، الأدوار، التصنيفات، التدقيق، سياسة النشر</td></tr>
+      <tr><td>التحليلات والتقارير</td><td>القيادة والمحللون</td><td>مؤشرات، خرائط، مرشحات، تصدير، قصص نجاح</td></tr>
+    </tbody>
+  </table>
+  <p>اللغة الأساسية: <strong>العربية (RTL)</strong> مع تسميات إنجليزية ثانوية عند الحاجة للتواصل المؤسسي الدولي.</p>
+
+  <h2>4. الأدوار والصلاحيات</h2>
+  <p>مواءمة مع المستويات الثلاثة في المقترح:</p>
+  <ul>
+    <li><strong>مدير البعثة:</strong> الحوكمة، المستخدمون، التصنيفات، سياسة النشر النهائية، سجلات التدقيق.</li>
+    <li><strong>رئيس اللجنة:</strong> الإشراف على الطوابير، تعيين المراجعين، اعتماد النشر والتقارير.</li>
+    <li><strong>عضو اللجنة:</strong> مراجعة وتصنيف وفق التخصص (بحث، بيانات، اقتصاد، أكاديميا/ثقافة، مجتمع مدني، شراكات).</li>
+    <li><strong>مسؤول نقطة اتصال:</strong> نطاق جغرافي محدد (أنقرة / إسطنبول / غازي عنتاب)؛ تحقق أولي فقط.</li>
+    <li><strong>خبير / متطوع:</strong> إنشاء محدود وتعليق على سجلات مُسندة؛ بلا صلاحية نشر.</li>
+    <li><strong>مقدّم عام:</strong> تقديم عبر النموذج (تحقق بالبريد)؛ متابعة الحالة برمز تتبع أو رابط آمن.</li>
+    <li><strong>محلل للقراءة فقط:</strong> لوحات وتصدير؛ بلا تعديل.</li>
+  </ul>
+  <p>كل تغيير في الحالة يُسجَّل (من قام به، متى، من→إلى، وملاحظة).</p>
+
+  <h2>5. نموذج البيانات الأساسي</h2>
+  <h3>الكيانات الرئيسية</h3>
+  <ul>
+    <li><strong>شخص (كفاءة):</strong> الاسم، التخصص، المدينة، ملامح تعليمية/مهنية، تواصل (مقيّد)، موافقات النشر.</li>
+    <li><strong>جهة/مؤسسة:</strong> النوع (شركة، منظمة، مجلس، مبادرة، إعلام، أكاديمي، نسائي/شبابي، أخرى)، سنة التأسيس، مدن النشاط، النطاق.</li>
+    <li><strong>منجز:</strong> العنوان، الوصف، الفترة، نطاق الأثر (محلي/وطني/ثنائي)، الشواهد، الربط بأشخاص وجهات.</li>
+    <li><strong>طلب توثيق:</strong> قناة المصدر، بيانات المقدّم، الحمولة، حالة المسار، نقطة الاتصال المسندة.</li>
+    <li><strong>تصنيفات:</strong> القطاع، نوع الجهة، المدينة/المحافظة، نطاق الأثر، حجم/طبيعة المنجز.</li>
+    <li><strong>شاهد/دليل:</strong> ملفات أو روابط مع قواعد احتفاظ.</li>
+    <li><strong>لقطة تقرير:</strong> استعلام مجمّد + كتل سردية للتقارير الدورية/السنوية.</li>
+    <li><strong>قصة نجاح:</strong> سرد قابل للنشر مرتبط بسجلات موثّقة.</li>
+  </ul>
+  <p><strong>أبعاد التصنيف:</strong> القطاع، المدينة، نوع الجهة، مجال النشاط، فترة التأسيس، نطاق الأثر، طبيعة/حجم المنجز.</p>
+  <p><strong>الملكية الجغرافية:</strong> كل مدينة تُربط بنقطة اتصال واحدة؛ تُوجَّه الطلبات تلقائياً حسب المدينة.</p>
+
+  <h2>6. مسار التحقق والنشر</h2>
+  <div class="flow">مسودة → مُقدَّم → مراجعة نقطة الاتصال → مراجعة اللجنة → موثَّق → منشور
+                 ↘ يحتاج استكمال ↗
+                 ↘ مرفوض
+المنشور → مؤرشف (عند إلغاء النشر)</div>
+  <ul>
+    <li>الدليل العام يعرض <strong>المنشور</strong> فقط.</li>
+    <li>اللوحات الداخلية ترى كل الحالات بحسب الدور.</li>
+    <li>كشف التكرار قبل الدمج في اللجنة.</li>
+    <li>تقليل البيانات الشخصية قبل النشر (إخفاء الهاتف/البريد).</li>
+  </ul>
+
+  <h2>7. المكدس التقني المقترح (سحابة Cloudflare)</h2>
+  <table>
+    <thead>
+      <tr><th>الطبقة</th><th>الاختيار</th><th>السبب</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>واجهة البرمجة</td><td>Hono على Cloudflare Workers</td><td>خفيف وسريع على الحافة ومتوافق مع Cloudflare</td></tr>
+      <tr><td>الواجهة</td><td>Vite + React على Cloudflare Pages</td><td>بوابة ولوحات بدون Next.js</td></tr>
+      <tr><td>واجهة الاستخدام</td><td>Tailwind + shadcn/ui + RTL</td><td>أنماط إدارة ناضجة ودعم عربي أصيل</td></tr>
+      <tr><td>قاعدة البيانات</td><td>Cloudflare D1 + Drizzle ORM</td><td>SQL علائقي داخل منظومة Cloudflare</td></tr>
+      <tr><td>جلسات/كاش</td><td>Cloudflare KV (اختياري)</td><td>جلسات ورموز تتبع وحدّ المعدّل</td></tr>
+      <tr><td>المصادقة</td><td>جلسات D1 + دعوة/رابط سحري</td><td>موظفين بدعوة وتتبع للمقدّمين</td></tr>
+      <tr><td>الملفات</td><td>Cloudflare R2</td><td>شواهد ومستندات</td></tr>
+      <tr><td>البحث</td><td>FTS5 في D1</td><td>كافٍ للنسخة الأولى</td></tr>
+      <tr><td>الخرائط</td><td>MapLibre + OSM</td><td>خرائط قطاعية/جغرافية</td></tr>
+      <tr><td>الرسوم والتصدير</td><td>Recharts + Excel + PDF</td><td>مؤشرات وحزم تقارير</td></tr>
+      <tr><td>البريد</td><td>Resend أو Mailchannels</td><td>الحالة والدعوات والاستكمال</td></tr>
+      <tr><td>الاستضافة</td><td>Pages + Workers + D1 + R2</td><td>مكدس Cloudflare موحّد عبر Wrangler</td></tr>
+      <tr><td>المراقبة والجودة</td><td>Workers Observability + Playwright</td><td>سجلات ومسار حرج مختبر</td></tr>
+    </tbody>
+  </table>
+  <p><strong>ملاحظات D1:</strong> فهرسة حسب المدينة/الحالة/القطاع؛ تجنّب الاستعلامات الثقيلة جداً في التحليلات؛ رفع الملفات إلى R2 وتخزين الروابط فقط في الجداول.</p>
+  <div class="code">munjazat/
+  apps/web/          # Vite + React (Pages)
+  apps/api/          # Hono (Workers)
+  packages/db/       # Drizzle + D1 migrations
+  packages/shared/
+  wrangler.toml
+  plan.md
+  خطة_منصة_منجزات.pdf</div>
+
+  <h2>8. وحدات لوحة التحكم</h2>
+  <ol>
+    <li><strong>لوحة العمليات:</strong> طوابير حسب الحالة، عمر الطلب، حمل نقاط الاتصال.</li>
+    <li><strong>خريطة التغطية:</strong> السجلات حسب المدينة؛ تصفية بالقطاع ونوع الجهة.</li>
+    <li><strong>ذكاء قطاعي:</strong> أعداد واتجاهات (اقتصاد، أكاديميا، مجتمع مدني، إعلام، نساء/شباب…).</li>
+    <li><strong>عرض الشبكة:</strong> أشخاص ↔ جهات ↔ منجزات.</li>
+    <li><strong>عدسة الشراكات:</strong> وسوم تعاون سوري–تركي–دولي.</li>
+    <li><strong>استوديو التقارير:</strong> لقطات مرشحات، Excel، ملخص PDF عربي.</li>
+    <li><strong>الحوكمة:</strong> مستخدمون، تصنيفات، تدقيق، قائمة موافقة/نشر.</li>
+  </ol>
+
+  <h2>9. الأمن والخصوصية والحوكمة الدبلوماسية</h2>
+  <ul>
+    <li>حسابات الموظفين بدعوة فقط؛ يُفضَّل التحقق الثنائي.</li>
+    <li>حذف منطقي + سجل تدقيق؛ لا إجراءات إدارية مجهولة.</li>
+    <li>إخفاء حقول التواصل داخلياً ما لم تتم الموافقة.</li>
+    <li>موافقة عند التقديم (الغرض، الاحتفاظ، حق التصحيح).</li>
+    <li>استعلامات مقيّدة بالدور الجغرافي لنقاط الاتصال.</li>
+    <li>نسخ احتياطي: تصدير/لقطات D1 دورية + إصدارات R2.</li>
+    <li>الأسرار عبر wrangler secret / لوحة Cloudflare فقط.</li>
+  </ul>
+
+  <h2>10. مراحل التسليم (6 أشهر)</h2>
+  <table>
+    <thead>
+      <tr><th>الشهر</th><th>مرحلة المقترح</th><th>تسليم المنصة</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>التأسيس والحوكمة</td><td>المستودع، المصادقة، الأدوار، التصنيفات، هيكل عربي RTL</td></tr>
+      <tr><td>2</td><td>بناء قاعدة البيانات</td><td>المخطط الكامل، إدارة الكيانات، الشواهد، التدقيق</td></tr>
+      <tr><td>3</td><td>التطبيق التجريبي</td><td>التقديم، نقطة الاتصال، اللجنة، النشر (مدينة تجريبية)</td></tr>
+      <tr><td>4–5</td><td>التوسع</td><td>النقاط الثلاث، التكرار، الخرائط، الخبراء، البريد</td></tr>
+      <tr><td>6</td><td>التحليل والإطلاق</td><td>التقارير، قصص النجاح، التحسين، التسليم والتدريب</td></tr>
+    </tbody>
+  </table>
+  <p><strong>حد النسخة التجريبية (نهاية الشهر 3):</strong> تقديم → مراجعة نقطة اتصال → تحقق اللجنة → نشر → مرشحات + Excel.</p>
+
+  <h2>11. خارج نطاق النسخة الأولى</h2>
+  <ul>
+    <li>تطبيقات جوال أصلية (الويب المتجاوب كافٍ).</li>
+    <li>تصنيف آلي بالذكاء الاصطناعي كسلطة وحيدة.</li>
+    <li>منصة متعددة الدول عند الإطلاق (تركيا أولاً مع قابلية التوسع لاحقاً).</li>
+    <li>شبكة تواصل اجتماعي أو مراسلة بين أبناء الجالية.</li>
+  </ul>
+
+  <h2>12. معايير النجاح</h2>
+  <ul>
+    <li>مسار إدخال منظم يستخدمه الجمهور ونقاط الاتصال.</li>
+    <li>كل سجل منشور له تاريخ تحقق ووسوم تصنيف.</li>
+    <li>إجابة القيادة عن أعداد الجهات حسب المدينة/القطاع دون جداول يدوية.</li>
+    <li>أول تقرير جاهز للبعثة خلال الشهر السادس.</li>
+    <li>نقاط الاتصال ترى طابور نطاقها الجغرافي فقط.</li>
+  </ul>
+
+  <h2>13. المخرجات المتوقعة من المنصة</h2>
+  <ul>
+    <li>قاعدة بيانات مؤسسية للكفاءات والجهات والمنجزات.</li>
+    <li>فهرس قابل للبحث والتصفية.</li>
+    <li>خريطة قطاعية وجغرافية لرأس المال البشري والمؤسسي.</li>
+    <li>تقارير دورية/سنوية ومؤشرات لدعم الشراكات واتخاذ القرار.</li>
+    <li>قصص ونماذج نجاح موثّقة.</li>
+    <li>نموذج تقني قابل للتطوير لبعثات أخرى مستقبلاً.</li>
+  </ul>
+
+  <h2>14. الخطوة التالية بعد اعتماد الخطة</h2>
+  <p>تأسيس المستودع (Vite/React على Pages، Hono على Workers، Drizzle/D1، ربط R2، الجلسات والدعوات، هيكل عربي RTL) وتنفيذ صدفة الحوكمة للشهر الأول قبل بناء معالج التقديم العام.</p>
+
+  <p class="note">هذه الوثيقة خطة تأسيس تقنية ومنتجية قابلة للتطوير، ولا تغني عن اعتماد الحوكمة والصلاحيات من الجهة المشرفة قبل التنفيذ الكامل.</p>
+
+</body>
+</html>
