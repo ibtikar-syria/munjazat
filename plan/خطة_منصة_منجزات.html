@@ -232,7 +232,7 @@
       <tr><td>الخرائط</td><td>MapLibre + OSM</td><td>خرائط قطاعية/جغرافية</td></tr>
       <tr><td>الرسوم والتصدير</td><td>Recharts + Excel + PDF</td><td>مؤشرات وحزم تقارير</td></tr>
       <tr><td>البريد</td><td>Resend أو Mailchannels</td><td>الحالة والدعوات والاستكمال</td></tr>
-      <tr><td>الاستضافة</td><td>Pages + Workers + D1 + R2</td><td>مكدس Cloudflare موحّد عبر Wrangler</td></tr>
+      <tr><td>الاستضافة</td><td>Workers + D1 + R2 + GitHub Actions</td><td>مكدس Cloudflare؛ نشر بنمط VMS</td></tr>
       <tr><td>المراقبة والجودة</td><td>Workers Observability + Playwright</td><td>سجلات ومسار حرج مختبر</td></tr>
     </tbody>
   </table>
@@ -312,6 +312,9 @@
   <h2>14. الخطوة التالية بعد اعتماد الخطة</h2>
   <p>تأسيس المستودع (Vite/React على Pages، Hono على Workers، Drizzle/D1، ربط R2، الجلسات والدعوات، هيكل عربي RTL) وتنفيذ صدفة الحوكمة للشهر الأول قبل بناء معالج التقديم العام.</p>
 
+  <h3>نشر CI/CD (GitHub Actions)</h3>
+  <p>مقتبس من نمط ibtikar-org-tr/vms: بيئات GitHub <strong>dev</strong> و <strong>main</strong>؛ مسارات backend/frontend/db؛ أسماء التطوير <code>munjazat-be-dev</code> / <code>munjazat-fe-dev</code>؛ في الإنتاج <code>THIS_APP_NAME_BE</code> / <code>THIS_APP_NAME_FE</code>؛ أسرار <code>CLOUDFLARE_API_TOKEN</code> و <code>SESSION_SECRET</code>؛ ومتغيرات مثل <code>MUNJAZAT_DB_ID</code> و <code>BUCKET_NAME</code> و <code>VITE_MUNJAZAT_MS</code> و <code>FRONTEND_BASE_URL</code> و <code>CORS_ALLOW_ORIGINS</code>. التفاصيل في <code>.github/DEPLOY.md</code>.</p>
+
   <h2>15. سجل تعديلات التنفيذ على الخطة</h2>
   <table>
     <thead>
@@ -325,6 +328,10 @@
       <tr>
         <td>2026-10-06</td>
         <td>إضافة تصفّح عام للمنجزات المنشورة (/browse + API /api/catalog) مع بحث/مدينة وتبويبات كفاءات وجهات</td>
+      </tr>
+      <tr>
+        <td>2026-10-06</td>
+        <td>إضافة GitHub Actions (backend/frontend/db × dev/main) بنمط VMS مع أسماء متغيرات مشابهة (CLOUDFLARE_*, THIS_APP_NAME_*, VITE_MUNJAZAT_MS، …)</td>
       </tr>
     </tbody>
   </table>

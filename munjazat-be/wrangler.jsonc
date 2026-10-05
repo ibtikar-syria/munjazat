@@ -4,9 +4,12 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-10-02",
   "compatibility_flags": ["nodejs_compat"],
+  "account_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "vars": {
     "APP_NAME": "منجزات",
-    "ENVIRONMENT": "development"
+    "ENVIRONMENT": "development",
+    "FRONTEND_BASE_URL": "http://localhost:5173",
+    "CORS_ALLOW_ORIGINS": "http://localhost:5173"
   },
   "d1_databases": [
     {

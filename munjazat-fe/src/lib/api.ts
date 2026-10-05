@@ -1,4 +1,4 @@
-const API_BASE = ''
+const API_BASE = (import.meta.env.VITE_MUNJAZAT_MS as string | undefined)?.replace(/\/$/, '') || ''
 
 export type User = {
   id: string

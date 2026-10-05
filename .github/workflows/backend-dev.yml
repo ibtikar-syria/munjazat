@@ -1,0 +1,74 @@
+name: (dev) [backend] Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'munjazat-be/**'
+      - '.github/workflows/backend-dev.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    defaults:
+      run:
+        working-directory: ./munjazat-be
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Update wrangler config with environment variables
+        run: |
+          jq_filter='.d1_databases[0].database_id = $dbid
+          | .d1_databases[0].database_name = $dbname
+          | .r2_buckets[0].bucket_name = $bucketname
+          | .kv_namespaces[0].id = $sessionsKvId
+          | .vars.APP_NAME = $appName
+          | .vars.ENVIRONMENT = $environment
+          | .vars.FRONTEND_BASE_URL = $frontendBaseUrl
+          | .vars.CORS_ALLOW_ORIGINS = $corsAllowOrigins
+          | .account_id = $accountId
+          | del(.vars.SESSION_SECRET)'
+
+          jq \
+            --arg dbid "${{ vars.MUNJAZAT_DB_ID }}" \
+            --arg dbname "${{ vars.MUNJAZAT_DB_NAME }}" \
+            --arg bucketname "${{ vars.BUCKET_NAME }}" \
+            --arg sessionsKvId "${{ vars.SESSIONS_KV_ID }}" \
+            --arg appName "${{ vars.APP_NAME }}" \
+            --arg environment "${{ vars.ENVIRONMENT }}" \
+            --arg frontendBaseUrl "${{ vars.FRONTEND_BASE_URL }}" \
+            --arg corsAllowOrigins "${{ vars.CORS_ALLOW_ORIGINS }}" \
+            --arg accountId "${{ vars.CLOUDFLARE_ACCOUNT_ID }}" \
+            "$jq_filter" \
+            wrangler.jsonc > wrangler.local.jsonc
+
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: wrangler deploy --config wrangler.local.jsonc --name munjazat-be-dev
+
+      - name: Set secrets in Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "${{ secrets.SESSION_SECRET }}" | wrangler secret put SESSION_SECRET --config wrangler.local.jsonc --name munjazat-be-dev
+
+      - name: Migrate D1 Database
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: wrangler d1 migrations apply ${{ vars.MUNJAZAT_DB_NAME }} --remote --config wrangler.local.jsonc

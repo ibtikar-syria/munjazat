@@ -1,0 +1,2 @@
+# Local Wrangler secrets / vars (copy to .dev.vars — do not commit)
+SESSION_SECRET=change-me-local-dev-secret

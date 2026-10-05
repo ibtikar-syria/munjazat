@@ -125,7 +125,7 @@
 | الخرائط | MapLibre + OpenStreetMap | خرائط قطاعية/جغرافية دون تكلفة Mapbox |
 | الرسوم والتصدير | Recharts + SheetJS/ExcelJS + توليد PDF من Worker أو من العميل | مؤشرات وحزم تقارير |
 | البريد | Resend أو Mailchannels من Worker | تحديثات الحالة والدعوات وطلب الاستكمال |
-| الاستضافة والنشر | **Cloudflare Pages + Workers + D1 + R2** عبر Wrangler | مكدس موحّد بدل Vercel/Neon |
+| الاستضافة والنشر | **Cloudflare Workers + D1 + R2** عبر Wrangler + GitHub Actions | مكدس موحّد؛ نشر مشابه لـ [ibtikar-org-tr/vms](https://github.com/ibtikar-org-tr/vms) |
 | المراقبة | Cloudflare Workers Observability + Sentry (اختياري) | سجلات وأخطاء واستخدام |
 | الجودة | Playwright + Vitest + `wrangler dev` | مسار التقديم → نقطة الاتصال → النشر محلياً وعلى الحافة |
 
@@ -232,6 +232,19 @@ munjazat/
 |---|---|
 | 2026-10-06 | نقل «دخول الموظفين» إلى التذييل؛ بناء تذييل مؤسسي؛ تحسين الواجهة العامة/الداخلية والاستجابة للجوال؛ مزامنة PDF مع الخطة |
 | 2026-10-06 | إضافة تصفّح عام للمنجزات المنشورة (`/browse` + API `/api/catalog`) مع بحث/مدينة وتبويبات كفاءات وجهات |
+| 2026-10-06 | إضافة GitHub Actions (backend/frontend/db × dev/main) بنمط VMS مع أسماء متغيرات مشابهة (`CLOUDFLARE_*`, `THIS_APP_NAME_*`, `VITE_MUNJAZAT_MS`, …) |
+
+### نشر CI/CD (GitHub Actions)
+
+مقتبس من نمط [ibtikar-org-tr/vms](https://github.com/ibtikar-org-tr/vms):
+
+- بيئات GitHub: `dev` و `main`
+- مسارات العمل: `backend-*.yml`, `frontend-*.yml`, `db-*.yml`
+- أسماء العمال في التطوير: `munjazat-be-dev` / `munjazat-fe-dev`
+- في الإنتاج: `THIS_APP_NAME_BE` / `THIS_APP_NAME_FE`
+- أسرار: `CLOUDFLARE_API_TOKEN`, `SESSION_SECRET`
+- متغيرات أساسية: `CLOUDFLARE_ACCOUNT_ID`, `MUNJAZAT_DB_ID`, `MUNJAZAT_DB_NAME`, `BUCKET_NAME`, `SESSIONS_KV_ID`, `FRONTEND_BASE_URL`, `CORS_ALLOW_ORIGINS`, `VITE_MUNJAZAT_MS`, `VITE_BASE_PATH`, `VITE_SITE_URL`
+- التفاصيل: [`.github/DEPLOY.md`](../.github/DEPLOY.md)
 
 **قاعدة التحديث:** بعد كل طلب تعديل على المنتج تُحدَّث معاً: `plan/plan.md` + `plan/خطة_منصة_منجزات.html` + `plan/خطة_منصة_منجزات.pdf` (عبر `npm run pdf` داخل مجلد `plan`).
 
