@@ -31,6 +31,11 @@ function SiteFooter() {
             <h2 className="text-sm font-semibold text-[var(--color-gold)]">للجمهور</h2>
             <ul className="mt-3 space-y-2 text-sm text-white/80">
               <li>
+                <Link to="/browse" className="hover:text-white">
+                  تصفّح المنجزات
+                </Link>
+              </li>
+              <li>
                 <Link to="/submit" className="hover:text-white">
                   تقديم توثيق
                 </Link>
@@ -107,6 +112,7 @@ export function PublicLayout() {
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
+            <PublicNavLink to="/browse">تصفّح المنجزات</PublicNavLink>
             <PublicNavLink to="/submit">تقديم توثيق</PublicNavLink>
             <PublicNavLink to="/track">تتبع الطلب</PublicNavLink>
             {user ? (
@@ -137,6 +143,12 @@ export function PublicLayout() {
         {menuOpen ? (
           <div className="border-t border-[var(--color-line)] bg-white md:hidden">
             <nav className="page-shell flex flex-col gap-1 py-3">
+              <NavLink
+                to="/browse"
+                className="rounded-lg px-3 py-3 text-sm text-[var(--color-ink)] hover:bg-[var(--color-sand)]"
+              >
+                تصفّح المنجزات
+              </NavLink>
               <NavLink
                 to="/submit"
                 className="rounded-lg px-3 py-3 text-sm text-[var(--color-ink)] hover:bg-[var(--color-sand)]"

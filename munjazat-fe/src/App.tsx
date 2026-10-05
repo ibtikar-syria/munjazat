@@ -4,6 +4,7 @@ import { DashboardLayout, PublicLayout } from './components/Layouts'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { SubmitPage, TrackPage } from './pages/SubmitTrackPages'
+import { AchievementDetailPage, BrowsePage } from './pages/BrowsePages'
 import {
   DashboardHome,
   DashboardPlaceholder,
@@ -17,6 +18,8 @@ export default function App() {
         <Routes>
           <Route element={<PublicLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="browse" element={<BrowsePage />} />
+            <Route path="browse/:id" element={<AchievementDetailPage />} />
             <Route path="submit" element={<SubmitPage />} />
             <Route path="track" element={<TrackPage />} />
             <Route path="login" element={<LoginPage />} />

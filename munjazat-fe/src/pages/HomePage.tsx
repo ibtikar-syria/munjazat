@@ -30,14 +30,14 @@ export function HomePage() {
             موثوقة تدعم التواصل والشراكات واتخاذ القرار.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link to="/submit" className="btn-gold w-full sm:w-auto">
-              قدّم منجزًا للتوثيق
+            <Link to="/browse" className="btn-gold w-full sm:w-auto">
+              تصفّح المنجزات
             </Link>
             <Link
-              to="/track"
+              to="/submit"
               className="inline-flex w-full items-center justify-center rounded-lg border border-white/30 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-white/10 sm:w-auto"
             >
-              تتبع حالة طلبك
+              قدّم منجزًا للتوثيق
             </Link>
           </div>
         </div>

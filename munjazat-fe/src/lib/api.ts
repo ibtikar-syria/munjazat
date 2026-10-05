@@ -8,6 +8,41 @@ export type User = {
   contactPoint: string | null
 }
 
+export type CatalogAchievement = {
+  id: string
+  title: string
+  description: string | null
+  periodStart: string | null
+  periodEnd: string | null
+  impactScope: string | null
+  cityId: string | null
+  cityNameAr: string | null
+  personName: string | null
+  personSpecialty?: string | null
+  organizationName: string | null
+  createdAt?: string
+}
+
+export type CatalogPerson = {
+  id: string
+  fullName: string
+  specialty: string | null
+  bio: string | null
+  cityId: string | null
+  cityNameAr: string | null
+}
+
+export type CatalogOrganization = {
+  id: string
+  name: string
+  description: string | null
+  foundedYear: number | null
+  scope: string | null
+  website: string | null
+  cityId: string | null
+  cityNameAr: string | null
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: 'include',
@@ -71,4 +106,38 @@ export const api = {
       updatedAt: string
       reviewNote: string | null
     }>(`/api/submissions/track/${encodeURIComponent(code)}`),
+  catalogStats: () =>
+    request<{ counts: { achievements: number; people: number; organizations: number } }>(
+      '/api/catalog/stats',
+    ),
+  catalogAchievements: (params?: { q?: string; cityId?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.q) qs.set('q', params.q)
+    if (params?.cityId) qs.set('cityId', params.cityId)
+    const suffix = qs.toString() ? `?${qs}` : ''
+    return request<{ items: CatalogAchievement[] }>(`/api/catalog/achievements${suffix}`)
+  },
+  catalogAchievement: (id: string) =>
+    request<{ item: CatalogAchievement }>(`/api/catalog/achievements/${encodeURIComponent(id)}`),
+  catalogPeople: (params?: { q?: string; cityId?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.q) qs.set('q', params.q)
+    if (params?.cityId) qs.set('cityId', params.cityId)
+    const suffix = qs.toString() ? `?${qs}` : ''
+    return request<{ items: CatalogPerson[] }>(`/api/catalog/people${suffix}`)
+  },
+  catalogOrganizations: (params?: { q?: string; cityId?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.q) qs.set('q', params.q)
+    if (params?.cityId) qs.set('cityId', params.cityId)
+    const suffix = qs.toString() ? `?${qs}` : ''
+    return request<{ items: CatalogOrganization[] }>(`/api/catalog/organizations${suffix}`)
+  },
+  seedCatalogDemo: () =>
+    request<{
+      seeded: boolean
+      message?: string
+      counts?: { people: number; organizations: number; achievements: number }
+      error?: string
+    }>('/api/catalog/seed-demo', { method: 'POST' }),
 }

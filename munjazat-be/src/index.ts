@@ -6,6 +6,7 @@ import { authRoutes } from './routes/auth'
 import { taxonomyRoutes } from './routes/taxonomies'
 import { dashboardRoutes } from './routes/dashboard'
 import { submissionRoutes } from './routes/submissions'
+import { catalogRoutes } from './routes/catalog'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()
@@ -34,6 +35,7 @@ app.route('/api/auth', authRoutes)
 app.route('/api/taxonomies', taxonomyRoutes)
 app.route('/api/dashboard', dashboardRoutes)
 app.route('/api/submissions', submissionRoutes)
+app.route('/api/catalog', catalogRoutes)
 
 app.notFound((c) => c.json({ error: 'المسار غير موجود' }, 404))
 app.onError((err, c) => {
