@@ -49,55 +49,57 @@ export function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-forest)]">
-        دخول الموظفين
-      </h1>
-      <p className="mt-2 text-sm text-[var(--color-muted)]">
-        حسابات اللجنة ونقاط الاتصال وإدارة البعثة فقط.
-      </p>
-      <form
-        onSubmit={onSubmit}
-        className="mt-8 space-y-4 rounded-xl border border-[var(--color-line)] bg-white p-6"
-      >
-        <label className="block text-sm">
-          البريد
-          <input
-            className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            required
-          />
-        </label>
-        <label className="block text-sm">
-          كلمة المرور
-          <input
-            className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            required
-          />
-        </label>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
-        {info ? <p className="text-sm text-[var(--color-forest)]">{info}</p> : null}
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-md bg-[var(--color-forest)] py-2.5 text-white disabled:opacity-60"
-        >
-          دخول
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => void bootstrap()}
-          className="w-full rounded-md border border-[var(--color-line)] py-2 text-sm text-[var(--color-muted)]"
-        >
-          تهيئة مدير تجريبي (تطوير فقط)
-        </button>
-      </form>
+    <div className="page-shell py-10 sm:py-16">
+      <div className="mx-auto max-w-md">
+        <h1 className="display text-3xl text-[var(--color-forest)] sm:text-4xl">دخول الموظفين</h1>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--color-muted)]">
+          حسابات اللجنة ونقاط الاتصال وإدارة البعثة فقط. الرابط متاح من تذييل الموقع.
+        </p>
+
+        <form onSubmit={onSubmit} className="surface mt-8 space-y-4 p-5 sm:p-7">
+          <label className="label">
+            البريد
+            <input
+              className="field"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              required
+              autoComplete="username"
+            />
+          </label>
+          <label className="label">
+            كلمة المرور
+            <input
+              className="field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              required
+              autoComplete="current-password"
+            />
+          </label>
+
+          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {info ? (
+            <p className="rounded-lg bg-[var(--color-sand)] px-3 py-2 text-sm text-[var(--color-forest)]">
+              {info}
+            </p>
+          ) : null}
+
+          <button type="submit" disabled={busy} className="btn-primary w-full">
+            دخول
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void bootstrap()}
+            className="btn-secondary w-full text-[var(--color-muted)]"
+          >
+            تهيئة مدير تجريبي (تطوير فقط)
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

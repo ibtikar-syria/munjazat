@@ -26,7 +26,10 @@ export function SubmitPage() {
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    void api.cities().then((res) => setCities(res.items)).catch(() => setCities([]))
+    void api
+      .cities()
+      .then((res) => setCities(res.items))
+      .catch(() => setCities([]))
   }, [])
 
   async function onSubmit(e: FormEvent) {
@@ -60,91 +63,93 @@ export function SubmitPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-forest)]">
-        تقديم طلب توثيق
-      </h1>
-      <p className="mt-2 text-[var(--color-muted)]">
-        أرسل بيانات أولية. ستمر عبر نقطة الاتصال ثم اللجنة قبل أي نشر عام.
-      </p>
+    <div className="page-shell py-10 sm:py-14">
+      <div className="mx-auto max-w-2xl">
+        <h1 className="display text-3xl text-[var(--color-forest)] sm:text-4xl">تقديم طلب توثيق</h1>
+        <p className="mt-3 text-[var(--color-muted)] leading-relaxed">
+          أرسل بيانات أولية. ستمر عبر نقطة الاتصال ثم اللجنة قبل أي نشر عام.
+        </p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-xl border border-[var(--color-line)] bg-white p-6">
-        <label className="block text-sm">
-          نوع السجل
-          <select
-            className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-            value={entityKind}
-            onChange={(e) => setEntityKind(e.target.value as typeof entityKind)}
-          >
-            <option value="person">كفاءة / شخص</option>
-            <option value="organization">جهة / مؤسسة</option>
-            <option value="achievement">منجز</option>
-          </select>
-        </label>
-        <label className="block text-sm">
-          الاسم / العنوان
-          <input
-            className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </label>
-        <label className="block text-sm">
-          المدينة
-          <select
-            className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-            value={cityId}
-            onChange={(e) => setCityId(e.target.value)}
-          >
-            <option value="">— اختياري —</option>
-            {cities.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nameAr}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="grid md:grid-cols-2 gap-4">
-          <label className="block text-sm">
-            اسم المقدّم
+        <form onSubmit={onSubmit} className="surface mt-8 space-y-5 p-5 sm:p-7">
+          <label className="label">
+            نوع السجل
+            <select
+              className="field"
+              value={entityKind}
+              onChange={(e) => setEntityKind(e.target.value as typeof entityKind)}
+            >
+              <option value="person">كفاءة / شخص</option>
+              <option value="organization">جهة / مؤسسة</option>
+              <option value="achievement">منجز</option>
+            </select>
+          </label>
+
+          <label className="label">
+            الاسم / العنوان
             <input
-              className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-              value={submitterName}
-              onChange={(e) => setSubmitterName(e.target.value)}
+              className="field"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </label>
-          <label className="block text-sm">
-            بريد المقدّم
-            <input
-              type="email"
-              className="mt-1 w-full rounded-md border border-[var(--color-line)] px-3 py-2"
-              value={submitterEmail}
-              onChange={(e) => setSubmitterEmail(e.target.value)}
-              required
-            />
+
+          <label className="label">
+            المدينة
+            <select className="field" value={cityId} onChange={(e) => setCityId(e.target.value)}>
+              <option value="">— اختياري —</option>
+              {cities.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nameAr}
+                </option>
+              ))}
+            </select>
           </label>
-        </div>
-        <label className="flex items-start gap-2 text-sm text-[var(--color-muted)]">
-          <input
-            type="checkbox"
-            className="mt-1"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-          />
-          أوافق على معالجة البيانات لغرض التوثيق المؤسسي والمراجعة من قبل اللجنة والبعثة.
-        </label>
-        {error ? <p className="text-sm text-red-700">{error}</p> : null}
-        {result ? <p className="text-sm text-[var(--color-forest)] font-medium">{result}</p> : null}
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-[var(--color-forest)] px-5 py-2.5 text-white disabled:opacity-60"
-        >
-          إرسال الطلب
-        </button>
-      </form>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="label">
+              اسم المقدّم
+              <input
+                className="field"
+                value={submitterName}
+                onChange={(e) => setSubmitterName(e.target.value)}
+                required
+              />
+            </label>
+            <label className="label">
+              بريد المقدّم
+              <input
+                type="email"
+                className="field"
+                value={submitterEmail}
+                onChange={(e) => setSubmitterEmail(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+
+          <label className="flex items-start gap-3 text-sm leading-relaxed text-[var(--color-muted)]">
+            <input
+              type="checkbox"
+              className="mt-1 size-4 accent-[var(--color-forest)]"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+            />
+            أوافق على معالجة البيانات لغرض التوثيق المؤسسي والمراجعة من قبل اللجنة والبعثة.
+          </label>
+
+          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {result ? (
+            <p className="rounded-lg bg-[var(--color-sand)] px-3 py-2 text-sm font-medium text-[var(--color-forest)]">
+              {result}
+            </p>
+          ) : null}
+
+          <button type="submit" disabled={busy} className="btn-primary w-full sm:w-auto">
+            إرسال الطلب
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
@@ -173,36 +178,52 @@ export function TrackPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-12">
-      <h1 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-forest)]">
-        تتبع الطلب
-      </h1>
-      <form onSubmit={onSubmit} className="mt-6 flex gap-2">
-        <input
-          className="flex-1 rounded-md border border-[var(--color-line)] px-3 py-2 bg-white"
-          placeholder="مثال: MJZ-XXXXXXXX"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          required
-        />
-        <button type="submit" className="rounded-md bg-[var(--color-forest)] px-4 text-white">
-          بحث
-        </button>
-      </form>
-      {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
-      {data ? (
-        <div className="mt-6 rounded-xl border border-[var(--color-line)] bg-white p-5 space-y-2 text-sm">
-          <div>
-            الرمز: <strong>{data.trackingCode}</strong>
+    <div className="page-shell py-10 sm:py-14">
+      <div className="mx-auto max-w-lg">
+        <h1 className="display text-3xl text-[var(--color-forest)] sm:text-4xl">تتبع الطلب</h1>
+        <p className="mt-3 text-sm text-[var(--color-muted)]">أدخل رمز التتبع الذي وصلك بعد التقديم.</p>
+
+        <form onSubmit={onSubmit} className="surface mt-8 flex flex-col gap-3 p-5 sm:flex-row sm:items-stretch">
+          <input
+            className="field !mt-0 flex-1"
+            placeholder="مثال: MJZ-XXXXXXXX"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+          />
+          <button type="submit" className="btn-primary w-full sm:w-auto">
+            بحث
+          </button>
+        </form>
+
+        {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
+
+        {data ? (
+          <div className="surface mt-6 space-y-3 p-5 text-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[var(--color-muted)]">الرمز</span>
+              <strong className="font-mono tracking-wide">{data.trackingCode}</strong>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[var(--color-muted)]">الحالة</span>
+              <strong className="text-[var(--color-forest)]">
+                {statusLabels[data.status] ?? data.status}
+              </strong>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[var(--color-muted)]">النوع</span>
+              <span>{data.entityKind}</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[var(--color-muted)]">تاريخ التقديم</span>
+              <span>{new Date(data.createdAt).toLocaleString('ar')}</span>
+            </div>
+            {data.reviewNote ? (
+              <div className="rounded-lg bg-[var(--color-sand)] px-3 py-2">ملاحظة: {data.reviewNote}</div>
+            ) : null}
           </div>
-          <div>
-            الحالة: <strong>{statusLabels[data.status] ?? data.status}</strong>
-          </div>
-          <div>النوع: {data.entityKind}</div>
-          <div>تاريخ التقديم: {new Date(data.createdAt).toLocaleString('ar')}</div>
-          {data.reviewNote ? <div>ملاحظة: {data.reviewNote}</div> : null}
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   )
 }

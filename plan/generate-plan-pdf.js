@@ -1,18 +1,22 @@
+const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 
 (async () => {
   const htmlPath = path.resolve(__dirname, "خطة_منصة_منجزات.html");
   const pdfPath = path.resolve(__dirname, "خطة_منصة_منجزات.pdf");
-  const executablePath = path.resolve(
+  const cachedChrome = path.resolve(
     __dirname,
     ".puppeteer-cache/chrome/linux-154.0.8037.57/chrome-linux64/chrome"
   );
-  const browser = await puppeteer.launch({
+  const launchOptions = {
     headless: "new",
-    executablePath,
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--font-render-hinting=none"],
-  });
+  };
+  if (fs.existsSync(cachedChrome)) {
+    launchOptions.executablePath = cachedChrome;
+  }
+  const browser = await puppeteer.launch(launchOptions);
   const page = await browser.newPage();
   await page.goto(`file://${htmlPath}`, { waitUntil: "networkidle0" });
   await page.pdf({
