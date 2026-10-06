@@ -41,6 +41,13 @@ const DEFAULT_CITIES: Array<{
   { nameAr: 'أضنة', nameEn: 'Adana', province: 'أضنة', contactPoint: 'gaziantep' },
   { nameAr: 'بورصة', nameEn: 'Bursa', province: 'بورصة', contactPoint: 'istanbul' },
   { nameAr: 'إزمير', nameEn: 'Izmir', province: 'إزمير', contactPoint: 'istanbul' },
+  { nameAr: 'قيصري', nameEn: 'Kayseri', province: 'قيصري', contactPoint: 'ankara' },
+  { nameAr: 'قونية', nameEn: 'Konya', province: 'قونية', contactPoint: 'ankara' },
+  { nameAr: 'أنطاليا', nameEn: 'Antalya', province: 'أنطاليا', contactPoint: 'istanbul' },
+  { nameAr: 'هطاي', nameEn: 'Hatay', province: 'هطاي', contactPoint: 'gaziantep' },
+  { nameAr: 'شانلي أورفا', nameEn: 'Şanlıurfa', province: 'شانلي أورفا', contactPoint: 'gaziantep' },
+  { nameAr: 'كلس', nameEn: 'Kilis', province: 'كلس', contactPoint: 'gaziantep' },
+  { nameAr: 'ماردين', nameEn: 'Mardin', province: 'ماردين', contactPoint: 'gaziantep' },
 ]
 
 export const taxonomyRoutes = new Hono<AppEnv>()

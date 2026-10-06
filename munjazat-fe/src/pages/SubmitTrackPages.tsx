@@ -1,7 +1,10 @@
-import { type FormEvent, useEffect, useState } from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { EmailField } from '../components/form/EmailField'
+import { SearchableSelectField } from '../components/form/SearchableSelectField'
 import { api } from '../lib/api'
+import { isValidEmail } from '../utils/email'
 
-type City = { id: string; nameAr: string; contactPoint: string }
+type City = { id: string; nameAr: string; nameEn?: string | null; contactPoint: string }
 
 const statusLabels: Record<string, string> = {
   submitted: 'مُقدَّم',
@@ -17,6 +20,7 @@ export function SubmitPage() {
   const [cities, setCities] = useState<City[]>([])
   const [entityKind, setEntityKind] = useState<'person' | 'organization' | 'achievement'>('person')
   const [title, setTitle] = useState('')
+  const [details, setDetails] = useState('')
   const [submitterName, setSubmitterName] = useState('')
   const [submitterEmail, setSubmitterEmail] = useState('')
   const [cityId, setCityId] = useState('')
@@ -32,8 +36,23 @@ export function SubmitPage() {
       .catch(() => setCities([]))
   }, [])
 
+  const cityOptions = useMemo(
+    () =>
+      cities.map((city) => ({
+        value: city.id,
+        label: city.nameAr,
+        secondaryLabel: city.nameEn || undefined,
+        searchText: `${city.nameAr} ${city.nameEn ?? ''} ${city.contactPoint}`,
+      })),
+    [cities],
+  )
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    if (!isValidEmail(submitterEmail)) {
+      setError('البريد الإلكتروني غير صالح. اكتب الصيغة الصحيحة مثل: name@gmail.com')
+      return
+    }
     if (!consent) {
       setError('الموافقة على استخدام البيانات مطلوبة')
       return
@@ -50,11 +69,13 @@ export function SubmitPage() {
         consent: true,
         payload: {
           title,
-          summary: title,
+          details,
+          summary: details || title,
         },
       })
       setResult(`رمز التتبع: ${res.trackingCode}`)
       setTitle('')
+      setDetails('')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذّر الإرسال')
     } finally {
@@ -95,38 +116,44 @@ export function SubmitPage() {
           </label>
 
           <label className="label">
-            المدينة
-            <select className="field" value={cityId} onChange={(e) => setCityId(e.target.value)}>
-              <option value="">— اختياري —</option>
-              {cities.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nameAr}
-                </option>
-              ))}
-            </select>
+            التفاصيل
+            <textarea
+              className="field min-h-48 resize-y leading-relaxed"
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="اكتب وصفاً واضحاً للمنجز أو الجهة أو الكفاءة: ماذا تم، أين، ومتى، وأثره."
+              required
+              rows={10}
+            />
           </label>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="label">
-              اسم المقدّم
-              <input
-                className="field"
-                value={submitterName}
-                onChange={(e) => setSubmitterName(e.target.value)}
-                required
-              />
-            </label>
-            <label className="label">
-              بريد المقدّم
-              <input
-                type="email"
-                className="field"
-                value={submitterEmail}
-                onChange={(e) => setSubmitterEmail(e.target.value)}
-                required
-              />
-            </label>
-          </div>
+          <SearchableSelectField
+            id="city"
+            label="المدينة"
+            placeholder="ابحث عن المدينة…"
+            emptyMessage="لا توجد مدينة مطابقة"
+            value={cityId}
+            options={cityOptions}
+            onChange={setCityId}
+          />
+
+          <label className="label">
+            اسم المقدّم
+            <input
+              className="field"
+              value={submitterName}
+              onChange={(e) => setSubmitterName(e.target.value)}
+              required
+            />
+          </label>
+
+          <EmailField
+            id="submitter-email"
+            label="بريد المقدّم"
+            value={submitterEmail}
+            onChange={setSubmitterEmail}
+            required
+          />
 
           <label className="flex items-start gap-3 text-sm leading-relaxed text-[var(--color-muted)]">
             <input

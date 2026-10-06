@@ -77,9 +77,9 @@ export const api = {
   seedTaxonomies: () =>
     request<{ seeded: boolean; message?: string }>('/api/taxonomies/seed', { method: 'POST' }),
   cities: () =>
-    request<{ items: Array<{ id: string; nameAr: string; contactPoint: string }> }>(
-      '/api/taxonomies/cities',
-    ),
+    request<{
+      items: Array<{ id: string; nameAr: string; nameEn?: string | null; contactPoint: string }>
+    }>('/api/taxonomies/cities'),
   sectors: () =>
     request<{ items: Array<{ id: string; nameAr: string }> }>('/api/taxonomies/sectors'),
   dashboardSummary: () =>
