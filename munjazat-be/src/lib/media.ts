@@ -72,15 +72,48 @@ export function parseHttpUrl(raw: string) {
   }
 }
 
+export type RelatedLink = {
+  url: string
+  title: string | null
+  description: string | null
+  imageKey: string | null
+  imageUrl: string | null
+  siteName: string | null
+}
+
+function asOptionalString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+export function coerceRelatedLink(item: unknown): RelatedLink | null {
+  if (typeof item === 'string') {
+    const url = parseHttpUrl(item)
+    if (!url || url.length > 2048) return null
+    return { url, title: null, description: null, imageKey: null, imageUrl: null, siteName: null }
+  }
+  if (!item || typeof item !== 'object') return null
+  const rec = item as Record<string, unknown>
+  const url = parseHttpUrl(String(rec.url ?? ''))
+  if (!url || url.length > 2048) return null
+  const imageKey = asOptionalString(rec.imageKey)
+  return {
+    url,
+    title: asOptionalString(rec.title)?.slice(0, 180) ?? null,
+    description: asOptionalString(rec.description)?.slice(0, 240) ?? null,
+    imageKey: imageKey && /^[a-f0-9]{16,64}$/.test(imageKey) ? imageKey : null,
+    imageUrl: asOptionalString(rec.imageUrl),
+    siteName: asOptionalString(rec.siteName)?.slice(0, 80) ?? null,
+  }
+}
+
 export function normalizeRelatedLinks(input: unknown) {
   if (!Array.isArray(input)) return []
-  const out: string[] = []
+  const out: RelatedLink[] = []
   for (const item of input) {
-    if (typeof item !== 'string') continue
-    const url = parseHttpUrl(item)
-    if (!url) continue
-    if (url.length > 2048) continue
-    if (!out.includes(url)) out.push(url)
+    const link = coerceRelatedLink(item)
+    if (!link) continue
+    if (out.some((row) => row.url === link.url)) continue
+    out.push(link)
     if (out.length >= MAX_RELATED_LINKS) break
   }
   return out

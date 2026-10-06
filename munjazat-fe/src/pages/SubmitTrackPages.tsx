@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { SubmitEvidenceCard, SubmitRecordCard, SubmitterCard } from '../components/form/SubmitFormCards'
-import { api } from '../lib/api'
+import { api, type RelatedLink } from '../lib/api'
 import { isValidEmail } from '../utils/email'
 
 const statusLabels: Record<string, string> = {
@@ -46,7 +46,8 @@ export function SubmitPage() {
   const [submitterEmail, setSubmitterEmail] = useState('')
   const [location, setLocation] = useState({ region: '', city: '' })
   const [linkDraft, setLinkDraft] = useState('')
-  const [relatedLinks, setRelatedLinks] = useState<string[]>([])
+  const [relatedLinks, setRelatedLinks] = useState<RelatedLink[]>([])
+  const [linking, setLinking] = useState(false)
   const [mediaFiles, setMediaFiles] = useState<File[]>([])
   const [consent, setConsent] = useState(false)
   const [trackingCode, setTrackingCode] = useState<string | null>(null)
@@ -67,18 +68,19 @@ export function SubmitPage() {
     setLocation({ region: '', city: '' })
     setLinkDraft('')
     setRelatedLinks([])
+    setLinking(false)
     setMediaFiles([])
     setConsent(false)
     setEntityKind('person')
   }
 
-  function addRelatedLink() {
+  async function addRelatedLink() {
     const url = parseHttpUrl(linkDraft)
     if (!url) {
       setError('أدخل رابطاً صالحاً يبدأ بـ http أو https')
       return
     }
-    if (relatedLinks.includes(url)) {
+    if (relatedLinks.some((item) => item.url === url)) {
       setLinkDraft('')
       return
     }
@@ -87,8 +89,29 @@ export function SubmitPage() {
       return
     }
     setError('')
-    setRelatedLinks((current) => [...current, url])
     setLinkDraft('')
+    setLinking(true)
+    const placeholder: RelatedLink = {
+      url,
+      title: null,
+      description: null,
+      imageKey: null,
+      imageUrl: null,
+      siteName: null,
+    }
+    setRelatedLinks((current) => [...current, placeholder])
+    try {
+      const res = await api.previewLink(url)
+      setRelatedLinks((current) => current.map((item) => (item.url === url ? res.item : item)))
+    } catch {
+      setRelatedLinks((current) =>
+        current.map((item) =>
+          item.url === url ? { ...item, title: new URL(url).hostname.replace(/^www\./, '') } : item,
+        ),
+      )
+    } finally {
+      setLinking(false)
+    }
   }
 
   function addMedia(list: FileList | null) {
@@ -212,12 +235,14 @@ export function SubmitPage() {
           <SubmitEvidenceCard
             linkDraft={linkDraft}
             relatedLinks={relatedLinks}
+            linking={linking}
+            pendingUrl={linking ? relatedLinks.at(-1)?.url : undefined}
             mediaFiles={mediaFiles}
             mediaBytes={mediaBytes}
             formatBytes={formatBytes}
             onLinkDraft={setLinkDraft}
             onAddLink={addRelatedLink}
-            onRemoveLink={(url) => setRelatedLinks((current) => current.filter((item) => item !== url))}
+            onRemoveLink={(url) => setRelatedLinks((current) => current.filter((item) => item.url !== url))}
             onAddMedia={addMedia}
             onRemoveMedia={(file) => setMediaFiles((current) => current.filter((item) => item !== file))}
           />

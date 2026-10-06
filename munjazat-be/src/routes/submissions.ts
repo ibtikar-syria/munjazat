@@ -11,6 +11,7 @@ import {
   resolveContentType,
   sanitizeFileName,
 } from '../lib/media'
+import { emptyLinkPreview, fetchLinkPreview, isSafePublicHttpUrl, previewImagePath } from '../lib/linkPreview'
 import {
   contactPointFromTurkeyRegion,
   findTurkeyProvince,
@@ -30,10 +31,37 @@ const submitSchema = z.object({
   city: z.string().optional(),
   payload: z.record(z.string(), z.unknown()),
   consent: z.literal(true),
-  relatedLinks: z.array(z.string()).max(20).optional(),
+  relatedLinks: z.array(z.unknown()).max(20).optional(),
 })
 
 export const submissionRoutes = new Hono<AppEnv>()
+
+submissionRoutes.post('/link-preview', async (c) => {
+  const body = await c.req.json().catch(() => null)
+  const raw = body && typeof body === 'object' ? (body as { url?: unknown }).url : null
+  const url = typeof raw === 'string' ? isSafePublicHttpUrl(raw) : null
+  if (!url) {
+    return c.json({ error: 'الرابط غير صالح' }, 400)
+  }
+
+  try {
+    const item = await fetchLinkPreview(url.toString(), c.env.EVIDENCE)
+    return c.json({ item })
+  } catch {
+    return c.json({ item: emptyLinkPreview(url.toString()) })
+  }
+})
+
+submissionRoutes.get('/link-previews/:id', async (c) => {
+  const key = previewImagePath(c.req.param('id'))
+  if (!key) return c.json({ error: 'الملف غير موجود' }, 404)
+  const object = await c.env.EVIDENCE.get(key)
+  if (!object) return c.json({ error: 'الملف غير موجود' }, 404)
+  const headers = new Headers()
+  headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg')
+  headers.set('Cache-Control', 'public, max-age=86400')
+  return new Response(object.body, { headers })
+})
 
 async function readSubmitRequest(c: { req: { header: (name: string) => string | undefined; json: () => Promise<unknown>; formData: () => Promise<FormData> } }) {
   const contentType = c.req.header('content-type') || ''

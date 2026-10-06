@@ -1,5 +1,6 @@
 import { FormCard } from '../components/form/FormCard'
-import type { DashboardSubmissionDetail } from '../lib/api'
+import { LinkPreviewCard } from '../components/form/LinkPreviewCard'
+import type { DashboardSubmissionDetail, RelatedLink } from '../lib/api'
 import { contactPointLabels, entityKindLabels, formatDate, statusLabels } from '../lib/labels'
 
 export function QueueHeaderCard({ detail }: { detail: DashboardSubmissionDetail }) {
@@ -43,8 +44,33 @@ export function QueueRecordCard({ detail }: { detail: DashboardSubmissionDetail 
 }
 
 export function QueueEvidenceCard({ detail }: { detail: DashboardSubmissionDetail }) {
-  const links = Array.isArray(detail.payload.relatedLinks)
-    ? detail.payload.relatedLinks.filter((item): item is string => typeof item === 'string')
+  const links: RelatedLink[] = Array.isArray(detail.payload.relatedLinks)
+    ? detail.payload.relatedLinks
+        .map((item) => {
+          if (typeof item === 'string') {
+            return {
+              url: item,
+              title: null,
+              description: null,
+              imageKey: null,
+              imageUrl: null,
+              siteName: null,
+            } satisfies RelatedLink
+          }
+          if (item && typeof item === 'object' && 'url' in item && typeof (item as { url: unknown }).url === 'string') {
+            const rec = item as Partial<RelatedLink> & { url: string }
+            return {
+              url: rec.url,
+              title: rec.title ?? null,
+              description: rec.description ?? null,
+              imageKey: rec.imageKey ?? null,
+              imageUrl: rec.imageUrl ?? null,
+              siteName: rec.siteName ?? null,
+            }
+          }
+          return null
+        })
+        .filter((item): item is RelatedLink => item !== null)
     : []
 
   return (
@@ -52,20 +78,9 @@ export function QueueEvidenceCard({ detail }: { detail: DashboardSubmissionDetai
       <dl className="space-y-3 text-sm">
         <div>
           <dt className="text-[var(--color-muted)]">روابط ذات صلة</dt>
-          <dd className="mt-1 space-y-1">
+          <dd className="mt-2 space-y-3">
             {links.length ? (
-              links.map((url) => (
-                <a
-                  key={url}
-                  href={url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block truncate text-[var(--color-forest)] underline-offset-2 hover:underline"
-                  dir="ltr"
-                >
-                  {url}
-                </a>
-              ))
+              links.map((link) => <LinkPreviewCard key={link.url} link={link} />)
             ) : (
               <span className="text-[var(--color-muted)]">لا توجد روابط.</span>
             )}

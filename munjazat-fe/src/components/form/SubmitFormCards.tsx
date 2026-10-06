@@ -1,6 +1,8 @@
 import { EmailField } from './EmailField'
 import { FormCard } from './FormCard'
+import { LinkPreviewCard } from './LinkPreviewCard'
 import { TurkeyLocationFields } from './TurkeyLocationFields'
+import type { RelatedLink } from '../../lib/api'
 
 type EntityKind = 'person' | 'organization' | 'achievement'
 
@@ -63,6 +65,8 @@ export function SubmitRecordCard({
 export function SubmitEvidenceCard({
   linkDraft,
   relatedLinks,
+  linking,
+  pendingUrl,
   mediaFiles,
   mediaBytes,
   formatBytes,
@@ -73,7 +77,9 @@ export function SubmitEvidenceCard({
   onRemoveMedia,
 }: {
   linkDraft: string
-  relatedLinks: string[]
+  relatedLinks: RelatedLink[]
+  linking?: boolean
+  pendingUrl?: string
   mediaFiles: File[]
   mediaBytes: number
   formatBytes: (bytes: number) => string
@@ -87,13 +93,14 @@ export function SubmitEvidenceCard({
     <FormCard title="الشواهد" hint="روابط وملفات داعمة، اختيارية.">
       <div>
         <p className="label">روابط ذات صلة</p>
-        <p className="mt-1 text-xs text-[var(--color-muted)]">أضف رابطاً واحداً في كل مرة (مقال، موقع، شهادة منشورة).</p>
+        <p className="mt-1 text-xs text-[var(--color-muted)]">أضف رابطاً واحداً في كل مرة؛ تُجلب المعاينة تلقائياً.</p>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
           <input
             className="field !mt-0 flex-1"
             dir="ltr"
             placeholder="https://"
             value={linkDraft}
+            disabled={linking}
             onChange={(e) => onLinkDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -102,23 +109,19 @@ export function SubmitEvidenceCard({
               }
             }}
           />
-          <button type="button" className="btn-secondary" onClick={onAddLink}>
-            إضافة الرابط
+          <button type="button" className="btn-secondary" disabled={linking} onClick={onAddLink}>
+            {linking ? 'جارٍ الجلب…' : 'إضافة الرابط'}
           </button>
         </div>
         {relatedLinks.length ? (
-          <ul className="mt-3 space-y-2">
-            {relatedLinks.map((url) => (
-              <li
-                key={url}
-                className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-sand)] px-3 py-2 text-sm"
-              >
-                <a href={url} target="_blank" rel="noreferrer" className="min-w-0 truncate text-[var(--color-forest)]" dir="ltr">
-                  {url}
-                </a>
-                <button type="button" className="shrink-0 text-xs text-red-700" onClick={() => onRemoveLink(url)}>
-                  حذف
-                </button>
+          <ul className="mt-3 space-y-3">
+            {relatedLinks.map((link) => (
+              <li key={link.url}>
+                <LinkPreviewCard
+                  link={link}
+                  pending={pendingUrl === link.url}
+                  onRemove={() => onRemoveLink(link.url)}
+                />
               </li>
             ))}
           </ul>

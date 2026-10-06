@@ -1,5 +1,14 @@
 const API_BASE = (import.meta.env.VITE_MUNJAZAT_MS as string | undefined)?.replace(/\/$/, '') || ''
 
+export type RelatedLink = {
+  url: string
+  title: string | null
+  description: string | null
+  imageKey: string | null
+  imageUrl: string | null
+  siteName: string | null
+}
+
 export type User = {
   id: string
   email: string
@@ -189,6 +198,11 @@ export const api = {
   },
   dashboardUsers: () => request<{ items: StaffUser[] }>('/api/dashboard/users'),
   dashboardAudit: () => request<{ items: AuditItem[] }>('/api/dashboard/audit'),
+  previewLink: (url: string) =>
+    request<{ item: RelatedLink }>('/api/submissions/link-preview', {
+      method: 'POST',
+      body: JSON.stringify({ url }),
+    }),
   submit: (body: unknown, files?: File[]) => {
     if (files?.length) {
       const form = new FormData()
