@@ -148,7 +148,7 @@ export function QueuePage() {
 
         <div className="surface p-4 sm:p-5">
           {detail ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
                 <div className="text-xs text-[var(--color-muted)]">{detail.trackingCode}</div>
                 <h2 className="display mt-1 text-xl text-[var(--color-forest)]">{detail.title}</h2>
@@ -157,19 +157,10 @@ export function QueuePage() {
                   {detail.contactPoint ? ` · ${contactPointLabels[detail.contactPoint]}` : ''}
                 </p>
               </div>
-              <dl className="space-y-2 text-sm">
-                <div>
-                  <dt className="text-[var(--color-muted)]">المقدّم</dt>
-                  <dd>{detail.submitterName}</dd>
-                </div>
-                {detail.submitterEmail ? (
-                  <div>
-                    <dt className="text-[var(--color-muted)]">البريد</dt>
-                    <dd dir="ltr" className="text-left">
-                      {detail.submitterEmail}
-                    </dd>
-                  </div>
-                ) : null}
+
+              <section className="form-section">
+                <h3 className="form-section-title">بيانات السجل</h3>
+                <dl className="space-y-3 text-sm">
                 <div>
                   <dt className="text-[var(--color-muted)]">الموقع</dt>
                   <dd>
@@ -187,6 +178,12 @@ export function QueuePage() {
                         : '—'}
                   </dd>
                 </div>
+                </dl>
+              </section>
+
+              <section className="form-section">
+                <h3 className="form-section-title">الشواهد</h3>
+                <dl className="space-y-3 text-sm">
                 {Array.isArray(detail.payload.relatedLinks) && detail.payload.relatedLinks.length ? (
                   <div>
                     <dt className="text-[var(--color-muted)]">روابط ذات صلة</dt>
@@ -207,7 +204,9 @@ export function QueuePage() {
                         ))}
                     </dd>
                   </div>
-                ) : null}
+                ) : (
+                  <p className="text-[var(--color-muted)]">لا توجد روابط.</p>
+                )}
                 {detail.media?.length ? (
                   <div>
                     <dt className="text-[var(--color-muted)]">وسائط ذات صلة</dt>
@@ -224,13 +223,36 @@ export function QueuePage() {
                       ))}
                     </dd>
                   </div>
+                ) : (
+                  <p className="text-[var(--color-muted)]">لا توجد ملفات.</p>
+                )}
+                </dl>
+              </section>
+
+              <section className="form-section">
+                <h3 className="form-section-title">المقدّم</h3>
+                <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="text-[var(--color-muted)]">الاسم</dt>
+                  <dd>{detail.submitterName}</dd>
+                </div>
+                {detail.submitterEmail ? (
+                  <div>
+                    <dt className="text-[var(--color-muted)]">البريد</dt>
+                    <dd dir="ltr" className="text-left">
+                      {detail.submitterEmail}
+                    </dd>
+                  </div>
                 ) : null}
                 <div>
                   <dt className="text-[var(--color-muted)]">تاريخ التقديم</dt>
                   <dd>{formatDate(detail.createdAt)}</dd>
                 </div>
-              </dl>
+                </dl>
+              </section>
 
+              <section className="form-section bg-white">
+                <h3 className="form-section-title">إجراءات المراجعة</h3>
               <label className="label">
                 ملاحظة المراجعة
                 <textarea
@@ -264,6 +286,7 @@ export function QueuePage() {
               ) : (
                 <p className="text-sm text-[var(--color-muted)]">لا توجد إجراءات متاحة لدورك على هذه الحالة.</p>
               )}
+              </section>
             </div>
           ) : (
             <p className="text-sm leading-relaxed text-[var(--color-muted)]">اختر طلباً من القائمة لمراجعته.</p>

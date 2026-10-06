@@ -199,7 +199,10 @@ export function SubmitPage() {
           أرسل بيانات أولية. ستمر عبر نقطة الاتصال ثم اللجنة قبل أي نشر عام.
         </p>
 
-        <form onSubmit={onSubmit} className="surface mt-8 space-y-5 p-5 sm:p-7">
+        <form onSubmit={onSubmit} className="surface mt-8 space-y-6 p-5 sm:p-7">
+          <section className="form-section">
+            <h2 className="form-section-title">بيانات السجل</h2>
+            <p className="text-xs text-[var(--color-muted)]">ما يُراجع ويُنشر لاحقاً إن اعتُمد.</p>
           <label className="label">
             نوع السجل
             <select
@@ -236,7 +239,11 @@ export function SubmitPage() {
           </label>
 
           <TurkeyLocationFields value={location} onChange={setLocation} />
+          </section>
 
+          <section className="form-section">
+            <h2 className="form-section-title">الشواهد</h2>
+            <p className="text-xs text-[var(--color-muted)]">روابط وملفات داعمة، اختيارية.</p>
           <div>
             <p className="label">روابط ذات صلة</p>
             <p className="mt-1 text-xs text-[var(--color-muted)]">أضف رابطاً واحداً في كل مرة (مقال، موقع، شهادة منشورة).</p>
@@ -321,7 +328,11 @@ export function SubmitPage() {
               </ul>
             ) : null}
           </div>
+          </section>
 
+          <section className="form-section">
+            <h2 className="form-section-title">بيانات المقدّم</h2>
+            <p className="text-xs text-[var(--color-muted)]">للتواصل الداخلي فقط، ولا تُنشر للعموم.</p>
           <label className="label">
             اسم المقدّم
             <input
@@ -349,6 +360,7 @@ export function SubmitPage() {
             />
             أوافق على معالجة البيانات لغرض التوثيق المؤسسي والمراجعة من قبل اللجنة والبعثة.
           </label>
+          </section>
 
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
 

@@ -78,6 +78,14 @@ body {
     @apply rounded-2xl border border-[var(--color-line)] bg-white shadow-[0_1px_0_rgba(11,61,46,0.04)];
   }
 
+  .form-section {
+    @apply space-y-4 rounded-xl border border-[var(--color-line)] bg-[var(--color-sand)]/50 p-4 sm:p-5;
+  }
+
+  .form-section-title {
+    @apply display text-lg text-[var(--color-forest)];
+  }
+
   .nav-link {
     @apply text-sm text-[var(--color-muted)] transition hover:text-[var(--color-forest)];
   }
