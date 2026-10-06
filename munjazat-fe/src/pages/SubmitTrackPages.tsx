@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { EmailField } from '../components/form/EmailField'
 import { TurkeyLocationFields } from '../components/form/TurkeyLocationFields'
 import { api } from '../lib/api'
@@ -22,9 +23,23 @@ export function SubmitPage() {
   const [submitterEmail, setSubmitterEmail] = useState('')
   const [location, setLocation] = useState({ region: '', city: '' })
   const [consent, setConsent] = useState(false)
-  const [result, setResult] = useState<string | null>(null)
+  const [trackingCode, setTrackingCode] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+
+  function resetForm() {
+    setTrackingCode(null)
+    setCopied(false)
+    setError('')
+    setTitle('')
+    setDetails('')
+    setSubmitterName('')
+    setSubmitterEmail('')
+    setLocation({ region: '', city: '' })
+    setConsent(false)
+    setEntityKind('person')
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -38,7 +53,6 @@ export function SubmitPage() {
     }
     setBusy(true)
     setError('')
-    setResult(null)
     try {
       const res = await api.submit({
         entityKind,
@@ -56,10 +70,7 @@ export function SubmitPage() {
           city: location.city || undefined,
         },
       })
-      setResult(`رمز التتبع: ${res.trackingCode}`)
-      setTitle('')
-      setDetails('')
-      setLocation({ region: '', city: '' })
+      setTrackingCode(res.trackingCode)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذّر الإرسال')
     } finally {
@@ -67,9 +78,43 @@ export function SubmitPage() {
     }
   }
 
+  async function copyCode() {
+    if (!trackingCode) return
+    try {
+      await navigator.clipboard.writeText(trackingCode)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
   return (
     <div className="page-shell py-10 sm:py-14">
       <div className="mx-auto max-w-2xl">
+        {trackingCode ? (
+          <div className="surface p-6 sm:p-8">
+            <p className="text-sm font-medium text-[var(--color-forest)]">تم استلام الطلب</p>
+            <h1 className="display mt-2 text-3xl text-[var(--color-forest)] sm:text-4xl">احتفظ برمز التتبع</h1>
+            <p className="mt-3 leading-relaxed text-[var(--color-muted)]">
+              استخدم هذا الرمز لمتابعة حالة الطلب. لا يُنشر شيء للعموم قبل المراجعة.
+            </p>
+            <p className="mt-8 font-mono text-2xl tracking-[0.18em] text-[var(--color-ink)] sm:text-3xl">
+              {trackingCode}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button type="button" className="btn-primary" onClick={() => void copyCode()}>
+                {copied ? 'تم النسخ' : 'نسخ الرمز'}
+              </button>
+              <Link to={`/track?code=${encodeURIComponent(trackingCode)}`} className="btn-secondary">
+                تتبع الطلب
+              </Link>
+              <button type="button" className="btn-secondary" onClick={resetForm}>
+                تقديم طلب آخر
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         <h1 className="display text-3xl text-[var(--color-forest)] sm:text-4xl">تقديم طلب توثيق</h1>
         <p className="mt-3 text-[var(--color-muted)] leading-relaxed">
           أرسل بيانات أولية. ستمر عبر نقطة الاتصال ثم اللجنة قبل أي نشر عام.
@@ -142,23 +187,21 @@ export function SubmitPage() {
           </label>
 
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
-          {result ? (
-            <p className="rounded-lg bg-[var(--color-sand)] px-3 py-2 text-sm font-medium text-[var(--color-forest)]">
-              {result}
-            </p>
-          ) : null}
 
           <button type="submit" disabled={busy} className="btn-primary w-full sm:w-auto">
-            إرسال الطلب
+            {busy ? 'جارٍ الإرسال…' : 'إرسال الطلب'}
           </button>
         </form>
+          </>
+        )}
       </div>
     </div>
   )
 }
 
 export function TrackPage() {
-  const [code, setCode] = useState('')
+  const [searchParams] = useSearchParams()
+  const [code, setCode] = useState(searchParams.get('code') ?? '')
   const [error, setError] = useState('')
   const [data, setData] = useState<{
     trackingCode: string
