@@ -6,6 +6,7 @@ import {
   achievements,
   auditLogs,
   cities,
+  evidence,
   organizations,
   people,
   submissions,
@@ -182,6 +183,16 @@ dashboardRoutes.get('/submissions/:id', async (c) => {
   }
 
   const payload = parsePayload(row.payloadJson)
+  const media = await db
+    .select({
+      id: evidence.id,
+      fileName: evidence.fileName,
+      contentType: evidence.contentType,
+      sizeBytes: evidence.sizeBytes,
+    })
+    .from(evidence)
+    .where(eq(evidence.submissionId, row.id))
+
   return c.json({
     item: {
       id: row.id,
@@ -195,6 +206,7 @@ dashboardRoutes.get('/submissions/:id', async (c) => {
       submitterPhone: user.role === 'contact_point' ? null : row.submitterPhone,
       reviewNote: row.reviewNote,
       payload,
+      media,
       title: submissionTitle(payload, row.submitterName),
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
@@ -266,6 +278,36 @@ dashboardRoutes.patch('/submissions/:id', async (c) => {
 
   const [updated] = await db.select().from(submissions).where(eq(submissions.id, row.id)).limit(1)
   return c.json({ ok: true, item: updated })
+})
+
+dashboardRoutes.get('/evidence/:id', async (c) => {
+  const user = c.get('user')!
+  const db = createDb(c.env.DB)
+  const [row] = await db.select().from(evidence).where(eq(evidence.id, c.req.param('id'))).limit(1)
+  if (!row) return c.json({ error: 'الملف غير موجود' }, 404)
+
+  if (row.submissionId) {
+    const [submission] = await db
+      .select({ contactPoint: submissions.contactPoint })
+      .from(submissions)
+      .where(eq(submissions.id, row.submissionId))
+      .limit(1)
+    if (user.role === 'contact_point' && submission?.contactPoint !== user.contactPoint) {
+      return c.json({ error: 'ليست لديك صلاحية لهذا الملف' }, 403)
+    }
+  }
+
+  const object = await c.env.EVIDENCE.get(row.r2Key)
+  if (!object) return c.json({ error: 'الملف غير موجود في التخزين' }, 404)
+
+  const headers = new Headers()
+  headers.set('Content-Type', row.contentType || object.httpMetadata?.contentType || 'application/octet-stream')
+  headers.set('Cache-Control', 'private, no-store')
+  headers.set(
+    'Content-Disposition',
+    `attachment; filename*=UTF-8''${encodeURIComponent(row.fileName)}`,
+  )
+  return new Response(object.body, { headers })
 })
 
 dashboardRoutes.get('/directory', async (c) => {

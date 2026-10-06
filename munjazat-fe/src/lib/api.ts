@@ -72,6 +72,12 @@ export type DashboardSubmissionDetail = DashboardSubmission & {
   submitterPhone: string | null
   reviewNote: string | null
   payload: Record<string, unknown>
+  media: Array<{
+    id: string
+    fileName: string
+    contentType: string | null
+    sizeBytes: number | null
+  }>
   allowedStatuses: string[]
 }
 
@@ -94,13 +100,16 @@ export type AuditItem = {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const isForm = typeof FormData !== 'undefined' && init?.body instanceof FormData
+  const headers = new Headers(init?.headers)
+  if (!isForm && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
     ...init,
+    headers,
   })
 
   const data = await res.json().catch(() => ({}))
@@ -180,11 +189,21 @@ export const api = {
   },
   dashboardUsers: () => request<{ items: StaffUser[] }>('/api/dashboard/users'),
   dashboardAudit: () => request<{ items: AuditItem[] }>('/api/dashboard/audit'),
-  submit: (body: unknown) =>
-    request<{ trackingCode: string; message: string }>('/api/submissions', {
+  submit: (body: unknown, files?: File[]) => {
+    if (files?.length) {
+      const form = new FormData()
+      form.append('meta', JSON.stringify(body))
+      for (const file of files) form.append('media', file)
+      return request<{ trackingCode: string; message: string }>('/api/submissions', {
+        method: 'POST',
+        body: form,
+      })
+    }
+    return request<{ trackingCode: string; message: string }>('/api/submissions', {
       method: 'POST',
       body: JSON.stringify(body),
-    }),
+    })
+  },
   track: (code: string) =>
     request<{
       trackingCode: string

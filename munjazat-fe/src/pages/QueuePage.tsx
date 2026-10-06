@@ -187,6 +187,44 @@ export function QueuePage() {
                         : '—'}
                   </dd>
                 </div>
+                {Array.isArray(detail.payload.relatedLinks) && detail.payload.relatedLinks.length ? (
+                  <div>
+                    <dt className="text-[var(--color-muted)]">روابط ذات صلة</dt>
+                    <dd className="mt-1 space-y-1">
+                      {detail.payload.relatedLinks
+                        .filter((item): item is string => typeof item === 'string')
+                        .map((url) => (
+                          <a
+                            key={url}
+                            href={url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block truncate text-[var(--color-forest)] underline-offset-2 hover:underline"
+                            dir="ltr"
+                          >
+                            {url}
+                          </a>
+                        ))}
+                    </dd>
+                  </div>
+                ) : null}
+                {detail.media?.length ? (
+                  <div>
+                    <dt className="text-[var(--color-muted)]">وسائط ذات صلة</dt>
+                    <dd className="mt-1 space-y-1">
+                      {detail.media.map((file) => (
+                        <a
+                          key={file.id}
+                          href={`/api/dashboard/evidence/${encodeURIComponent(file.id)}`}
+                          className="block text-[var(--color-forest)] underline-offset-2 hover:underline"
+                        >
+                          {file.fileName}
+                          {file.sizeBytes != null ? ` · ${(file.sizeBytes / (1024 * 1024)).toFixed(1)} م.ب` : ''}
+                        </a>
+                      ))}
+                    </dd>
+                  </div>
+                ) : null}
                 <div>
                   <dt className="text-[var(--color-muted)]">تاريخ التقديم</dt>
                   <dd>{formatDate(detail.createdAt)}</dd>

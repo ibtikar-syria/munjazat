@@ -2,8 +2,15 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { createDb } from '../db/client'
-import { cities, submissions } from '../db/schema'
+import { cities, evidence, submissions } from '../db/schema'
 import { createId, createTrackingCode } from '../lib/ids'
+import {
+  MAX_MEDIA_FILES,
+  MAX_SUBMISSION_BYTES,
+  normalizeRelatedLinks,
+  resolveContentType,
+  sanitizeFileName,
+} from '../lib/media'
 import {
   contactPointFromTurkeyRegion,
   findTurkeyProvince,
@@ -23,15 +30,66 @@ const submitSchema = z.object({
   city: z.string().optional(),
   payload: z.record(z.string(), z.unknown()),
   consent: z.literal(true),
+  relatedLinks: z.array(z.string()).max(20).optional(),
 })
 
 export const submissionRoutes = new Hono<AppEnv>()
 
-submissionRoutes.post('/', async (c) => {
+async function readSubmitRequest(c: { req: { header: (name: string) => string | undefined; json: () => Promise<unknown>; formData: () => Promise<FormData> } }) {
+  const contentType = c.req.header('content-type') || ''
+  if (contentType.includes('multipart/form-data')) {
+    const form = await c.req.formData()
+    const raw = form.get('meta')
+    if (typeof raw !== 'string') {
+      return { error: 'بيانات غير صالحة' as const, status: 400 as const }
+    }
+    let body: unknown
+    try {
+      body = JSON.parse(raw)
+    } catch {
+      return { error: 'بيانات غير صالحة' as const, status: 400 as const }
+    }
+    const files = form.getAll('media').filter((item): item is File => item instanceof File && item.size > 0)
+    return { body, files }
+  }
+
   const body = await c.req.json().catch(() => null)
-  const parsed = submitSchema.safeParse(body)
+  return { body, files: [] as File[] }
+}
+
+submissionRoutes.post('/', async (c) => {
+  const contentLength = Number(c.req.header('content-length') || 0)
+  if (contentLength > MAX_SUBMISSION_BYTES + 1024 * 1024) {
+    return c.json({ error: 'حجم الطلب يتجاوز 100 ميغابايت' }, 413)
+  }
+
+  const incoming = await readSubmitRequest(c)
+  if ('error' in incoming) {
+    return c.json({ error: incoming.error }, incoming.status)
+  }
+
+  const parsed = submitSchema.safeParse(incoming.body)
   if (!parsed.success) {
     return c.json({ error: 'بيانات غير صالحة', details: parsed.error.flatten() }, 400)
+  }
+
+  const files = incoming.files
+  if (files.length > MAX_MEDIA_FILES) {
+    return c.json({ error: `يمكن إرفاق ${MAX_MEDIA_FILES} ملفاً كحد أقصى` }, 400)
+  }
+
+  const totalBytes = files.reduce((sum, file) => sum + file.size, 0)
+  if (totalBytes > MAX_SUBMISSION_BYTES) {
+    return c.json({ error: 'حجم الملفات مجتمعة يتجاوز 100 ميغابايت' }, 413)
+  }
+
+  const mediaMeta: Array<{ file: File; contentType: string; fileName: string }> = []
+  for (const file of files) {
+    const contentType = resolveContentType(file)
+    if (!contentType) {
+      return c.json({ error: `نوع الملف غير مسموح: ${file.name}` }, 400)
+    }
+    mediaMeta.push({ file, contentType, fileName: sanitizeFileName(file.name) })
   }
 
   const data = parsed.data
@@ -69,11 +127,13 @@ submissionRoutes.post('/', async (c) => {
     }
   }
 
+  const relatedLinks = normalizeRelatedLinks(data.relatedLinks ?? data.payload.relatedLinks)
   const payload = {
     ...data.payload,
     country: 'TR',
     region: region || undefined,
     city: cityName || undefined,
+    relatedLinks,
   }
 
   const trackingCode = createTrackingCode()
@@ -90,6 +150,27 @@ submissionRoutes.post('/', async (c) => {
     status: contactPoint ? 'cp_review' : 'submitted',
     contactPoint,
   })
+
+  if (mediaMeta.length) {
+    for (const item of mediaMeta) {
+      const evidenceId = createId('ev')
+      const r2Key = `submissions/${id}/${evidenceId}-${item.fileName}`
+      await c.env.EVIDENCE.put(r2Key, item.file, {
+        httpMetadata: { contentType: item.contentType },
+        customMetadata: { submissionId: id, fileName: item.fileName },
+      })
+      await db.insert(evidence).values({
+        id: evidenceId,
+        entityKind: data.entityKind as EntityKind,
+        entityId: id,
+        submissionId: id,
+        r2Key,
+        fileName: item.fileName,
+        contentType: item.contentType,
+        sizeBytes: item.file.size,
+      })
+    }
+  }
 
   return c.json(
     {

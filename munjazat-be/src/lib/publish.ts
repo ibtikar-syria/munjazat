@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { type Db } from '../db/client'
-import { achievements, cities, organizations, people, submissions } from '../db/schema'
+import { achievements, cities, evidence, organizations, people, submissions } from '../db/schema'
 import { createId } from './ids'
 import { findTurkeyProvince, normalizePlaceKey } from './turkeyProvinces'
 import type { EntityKind } from '../db/schema'
@@ -65,6 +65,7 @@ export async function publishSubmission(
       })
       await db.update(submissions).set({ entityId: id, updatedAt: now }).where(eq(submissions.id, submission.id))
     }
+    await db.update(evidence).set({ entityId: id }).where(eq(evidence.submissionId, submission.id))
     return id
   }
 
@@ -93,6 +94,7 @@ export async function publishSubmission(
       })
       await db.update(submissions).set({ entityId: id, updatedAt: now }).where(eq(submissions.id, submission.id))
     }
+    await db.update(evidence).set({ entityId: id }).where(eq(evidence.submissionId, submission.id))
     return id
   }
 
@@ -118,5 +120,6 @@ export async function publishSubmission(
     })
     await db.update(submissions).set({ entityId: id, updatedAt: now }).where(eq(submissions.id, submission.id))
   }
+  await db.update(evidence).set({ entityId: id }).where(eq(evidence.submissionId, submission.id))
   return id
 }
