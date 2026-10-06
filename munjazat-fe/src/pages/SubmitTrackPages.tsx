@@ -32,10 +32,6 @@ export function SubmitPage() {
       setError('البريد الإلكتروني غير صالح. اكتب الصيغة الصحيحة مثل: name@gmail.com')
       return
     }
-    if (!location.region || !location.city) {
-      setError('اختر المحافظة ثم المدينة')
-      return
-    }
     if (!consent) {
       setError('الموافقة على استخدام البيانات مطلوبة')
       return
@@ -48,16 +44,16 @@ export function SubmitPage() {
         entityKind,
         submitterName,
         submitterEmail,
-        region: location.region,
-        city: location.city,
+        region: location.region || undefined,
+        city: location.city || undefined,
         consent: true,
         payload: {
           title,
           details,
           summary: details || title,
           country: 'TR',
-          region: location.region,
-          city: location.city,
+          region: location.region || undefined,
+          city: location.city || undefined,
         },
       })
       setResult(`رمز التتبع: ${res.trackingCode}`)

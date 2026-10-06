@@ -108,8 +108,7 @@ export function TurkeyLocationFields({ value, onChange }: TurkeyLocationFieldsPr
       <SearchableSelectField
         id="turkey-province"
         label="المحافظة"
-        required
-        placeholder="ابحث عن المحافظة…"
+        placeholder="ابحث عن المحافظة (اختياري)…"
         emptyMessage="لا توجد محافظة مطابقة"
         value={selectedStateId ? String(selectedStateId) : ''}
         options={stateOptions}
@@ -129,9 +128,8 @@ export function TurkeyLocationFields({ value, onChange }: TurkeyLocationFieldsPr
       <SearchableSelectField
         id="turkey-city"
         label="المدينة"
-        required
         disabled={!selectedStateId}
-        placeholder={selectedStateId ? 'ابحث عن المدينة…' : 'اختر المحافظة أولاً'}
+        placeholder={selectedStateId ? 'ابحث عن المدينة (اختياري)…' : 'اختياري — اختر المحافظة أولاً'}
         emptyMessage="لا توجد مدينة مطابقة"
         value={value.city}
         options={cityOptions}
