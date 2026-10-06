@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { api, type DashboardSubmission, type DashboardSubmissionDetail } from '../lib/api'
-import { contactPointLabels, entityKindLabels, formatDate, statusLabels } from '../lib/labels'
+import { contactPointLabels, entityKindLabels, statusLabels } from '../lib/labels'
+import {
+  QueueEvidenceCard,
+  QueueHeaderCard,
+  QueueRecordCard,
+  QueueReviewCard,
+  QueueSubmitterCard,
+} from './QueueDetailCards'
 
 const STATUS_TABS = [
   { id: '', label: 'الكل' },
@@ -146,150 +153,25 @@ export function QueuePage() {
           )}
         </div>
 
-        <div className="surface p-4 sm:p-5">
+        <div className="space-y-5">
           {detail ? (
-            <div className="space-y-5">
-              <div>
-                <div className="text-xs text-[var(--color-muted)]">{detail.trackingCode}</div>
-                <h2 className="display mt-1 text-xl text-[var(--color-forest)]">{detail.title}</h2>
-                <p className="mt-1 text-sm text-[var(--color-muted)]">
-                  {entityKindLabels[detail.entityKind]} · {statusLabels[detail.status]}
-                  {detail.contactPoint ? ` · ${contactPointLabels[detail.contactPoint]}` : ''}
-                </p>
-              </div>
-
-              <section className="form-section">
-                <h3 className="form-section-title">بيانات السجل</h3>
-                <dl className="space-y-3 text-sm">
-                <div>
-                  <dt className="text-[var(--color-muted)]">الموقع</dt>
-                  <dd>
-                    {typeof detail.payload.region === 'string' ? detail.payload.region : '—'}
-                    {typeof detail.payload.city === 'string' ? ` / ${detail.payload.city}` : ''}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[var(--color-muted)]">التفاصيل</dt>
-                  <dd className="mt-1 whitespace-pre-wrap leading-relaxed">
-                    {typeof detail.payload.details === 'string'
-                      ? detail.payload.details
-                      : typeof detail.payload.summary === 'string'
-                        ? detail.payload.summary
-                        : '—'}
-                  </dd>
-                </div>
-                </dl>
-              </section>
-
-              <section className="form-section">
-                <h3 className="form-section-title">الشواهد</h3>
-                <dl className="space-y-3 text-sm">
-                {Array.isArray(detail.payload.relatedLinks) && detail.payload.relatedLinks.length ? (
-                  <div>
-                    <dt className="text-[var(--color-muted)]">روابط ذات صلة</dt>
-                    <dd className="mt-1 space-y-1">
-                      {detail.payload.relatedLinks
-                        .filter((item): item is string => typeof item === 'string')
-                        .map((url) => (
-                          <a
-                            key={url}
-                            href={url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block truncate text-[var(--color-forest)] underline-offset-2 hover:underline"
-                            dir="ltr"
-                          >
-                            {url}
-                          </a>
-                        ))}
-                    </dd>
-                  </div>
-                ) : (
-                  <p className="text-[var(--color-muted)]">لا توجد روابط.</p>
-                )}
-                {detail.media?.length ? (
-                  <div>
-                    <dt className="text-[var(--color-muted)]">وسائط ذات صلة</dt>
-                    <dd className="mt-1 space-y-1">
-                      {detail.media.map((file) => (
-                        <a
-                          key={file.id}
-                          href={`/api/dashboard/evidence/${encodeURIComponent(file.id)}`}
-                          className="block text-[var(--color-forest)] underline-offset-2 hover:underline"
-                        >
-                          {file.fileName}
-                          {file.sizeBytes != null ? ` · ${(file.sizeBytes / (1024 * 1024)).toFixed(1)} م.ب` : ''}
-                        </a>
-                      ))}
-                    </dd>
-                  </div>
-                ) : (
-                  <p className="text-[var(--color-muted)]">لا توجد ملفات.</p>
-                )}
-                </dl>
-              </section>
-
-              <section className="form-section">
-                <h3 className="form-section-title">المقدّم</h3>
-                <dl className="space-y-3 text-sm">
-                <div>
-                  <dt className="text-[var(--color-muted)]">الاسم</dt>
-                  <dd>{detail.submitterName}</dd>
-                </div>
-                {detail.submitterEmail ? (
-                  <div>
-                    <dt className="text-[var(--color-muted)]">البريد</dt>
-                    <dd dir="ltr" className="text-left">
-                      {detail.submitterEmail}
-                    </dd>
-                  </div>
-                ) : null}
-                <div>
-                  <dt className="text-[var(--color-muted)]">تاريخ التقديم</dt>
-                  <dd>{formatDate(detail.createdAt)}</dd>
-                </div>
-                </dl>
-              </section>
-
-              <section className="form-section bg-white">
-                <h3 className="form-section-title">إجراءات المراجعة</h3>
-              <label className="label">
-                ملاحظة المراجعة
-                <textarea
-                  className="field min-h-24"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="تظهر للمقدّم إذا طُلب استكمال"
-                />
-              </label>
-
-              {detail.allowedStatuses.length ? (
-                <div className="flex flex-wrap gap-2">
-                  {detail.allowedStatuses.map((next) => (
-                    <button
-                      key={next}
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void applyStatus(next)}
-                      className={
-                        next === 'published'
-                          ? 'btn-gold !px-3 !py-2 !text-xs'
-                          : next === 'rejected'
-                            ? 'btn-secondary !px-3 !py-2 !text-xs !text-red-700'
-                            : 'btn-secondary !px-3 !py-2 !text-xs !text-[var(--color-forest)]'
-                      }
-                    >
-                      {statusLabels[next] ?? next}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-[var(--color-muted)]">لا توجد إجراءات متاحة لدورك على هذه الحالة.</p>
-              )}
-              </section>
-            </div>
+            <>
+              <QueueHeaderCard detail={detail} />
+              <QueueRecordCard detail={detail} />
+              <QueueEvidenceCard detail={detail} />
+              <QueueSubmitterCard detail={detail} />
+              <QueueReviewCard
+                detail={detail}
+                note={note}
+                busy={busy}
+                onNote={setNote}
+                onStatus={(next) => void applyStatus(next)}
+              />
+            </>
           ) : (
-            <p className="text-sm leading-relaxed text-[var(--color-muted)]">اختر طلباً من القائمة لمراجعته.</p>
+            <div className="surface p-4 sm:p-5">
+              <p className="text-sm leading-relaxed text-[var(--color-muted)]">اختر طلباً من القائمة لمراجعته.</p>
+            </div>
           )}
         </div>
       </div>
