@@ -24,7 +24,7 @@ export function SubmitRecordCard({
   onLocation: (value: { region: string; city: string }) => void
 }) {
   return (
-    <FormCard title="بيانات السجل" hint="ما يُراجع ويُنشر لاحقاً إن اعتُمد.">
+    <FormCard title="بيانات السجل">
       <label className="label">
         نوع السجل
         <select
@@ -84,7 +84,7 @@ export function SubmitEvidenceCard({
   onRemoveMedia: (file: File) => void
 }) {
   return (
-    <FormCard title="الشواهد" hint="روابط وملفات داعمة، اختيارية.">
+    <FormCard title="الشواهد">
       <div>
         <p className="label">روابط ذات صلة</p>
         <p className="mt-1 text-xs text-[var(--color-muted)]">أضف رابطاً واحداً في كل مرة (مقال، موقع، شهادة منشورة).</p>
@@ -181,7 +181,7 @@ export function SubmitterCard({
   onConsent: (value: boolean) => void
 }) {
   return (
-    <FormCard title="بيانات المقدّم" hint="للتواصل الداخلي فقط، ولا تُنشر للعموم.">
+    <FormCard title="بيانات المقدّم">
       <label className="label">
         اسم المقدّم
         <input className="field" value={submitterName} onChange={(e) => onName(e.target.value)} required />

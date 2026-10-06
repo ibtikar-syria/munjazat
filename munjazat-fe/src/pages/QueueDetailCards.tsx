@@ -4,13 +4,15 @@ import { contactPointLabels, entityKindLabels, formatDate, statusLabels } from '
 
 export function QueueHeaderCard({ detail }: { detail: DashboardSubmissionDetail }) {
   return (
-    <FormCard title={detail.title}>
+    <section className="surface space-y-2 p-5 sm:p-7">
+      <p className="form-section-title">الطلب</p>
       <p className="text-xs text-[var(--color-muted)]">{detail.trackingCode}</p>
+      <p className="text-base font-medium text-[var(--color-ink)]">{detail.title}</p>
       <p className="text-sm text-[var(--color-muted)]">
         {entityKindLabels[detail.entityKind]} · {statusLabels[detail.status]}
         {detail.contactPoint ? ` · ${contactPointLabels[detail.contactPoint]}` : ''}
       </p>
-    </FormCard>
+    </section>
   )
 }
 

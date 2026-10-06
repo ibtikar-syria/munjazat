@@ -83,7 +83,7 @@ body {
   }
 
   .form-section-title {
-    @apply display text-lg text-[var(--color-forest)];
+    @apply border-b border-[var(--color-line)] pb-3 text-xs font-semibold tracking-wide text-[var(--color-muted)];
   }
 
   .nav-link {
