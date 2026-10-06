@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import iqabMark from '../assets/iqab.svg'
 import { useAuth } from '../lib/auth'
 
 function PublicNavLink({ to, children }: { to: string; children: React.ReactNode }) {
@@ -17,8 +18,14 @@ function SiteFooter() {
   const { user } = useAuth()
 
   return (
-    <footer className="mt-auto border-t border-[var(--color-line)] bg-[var(--color-forest-deep)] text-white">
-      <div className="page-shell py-10 sm:py-12">
+    <footer className="relative mt-auto overflow-hidden border-t border-[var(--color-line)] bg-[var(--color-forest-deep)] text-white">
+      <img
+        src={iqabMark}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 end-[-4%] h-[min(22rem,130%)] w-auto max-w-[min(42%,20rem)] -translate-y-1/2 object-contain opacity-[0.16] select-none sm:end-0 sm:opacity-[0.2]"
+      />
+      <div className="page-shell relative z-10 py-10 sm:py-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="display text-2xl">منجزات</div>
