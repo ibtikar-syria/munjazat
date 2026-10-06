@@ -83,7 +83,11 @@ body {
   }
 
   .form-section-title {
-    @apply border-b border-[var(--color-line)] pb-3 text-xs font-semibold tracking-wide text-[var(--color-muted)];
+    @apply text-xs font-semibold tracking-wide text-[var(--color-muted)];
+  }
+
+  .form-section-hint {
+    @apply mt-1 text-xs leading-snug text-[var(--color-muted)];
   }
 
   .nav-link {

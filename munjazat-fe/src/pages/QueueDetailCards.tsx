@@ -18,7 +18,7 @@ export function QueueHeaderCard({ detail }: { detail: DashboardSubmissionDetail 
 
 export function QueueRecordCard({ detail }: { detail: DashboardSubmissionDetail }) {
   return (
-    <FormCard title="بيانات السجل">
+    <FormCard title="بيانات السجل" hint="العنوان والتفاصيل والموقع كما وردت في الطلب.">
       <dl className="space-y-3 text-sm">
         <div>
           <dt className="text-[var(--color-muted)]">الموقع</dt>
@@ -48,7 +48,7 @@ export function QueueEvidenceCard({ detail }: { detail: DashboardSubmissionDetai
     : []
 
   return (
-    <FormCard title="الشواهد">
+    <FormCard title="الشواهد" hint="الروابط والملفات المرفقة مع الطلب.">
       <dl className="space-y-3 text-sm">
         <div>
           <dt className="text-[var(--color-muted)]">روابط ذات صلة</dt>
@@ -97,7 +97,7 @@ export function QueueEvidenceCard({ detail }: { detail: DashboardSubmissionDetai
 
 export function QueueSubmitterCard({ detail }: { detail: DashboardSubmissionDetail }) {
   return (
-    <FormCard title="المقدّم">
+    <FormCard title="المقدّم" hint="للتواصل الداخلي فقط، ولا تُنشر للعموم.">
       <dl className="space-y-3 text-sm">
         <div>
           <dt className="text-[var(--color-muted)]">الاسم</dt>
@@ -134,7 +134,7 @@ export function QueueReviewCard({
   onStatus: (status: string) => void
 }) {
   return (
-    <FormCard title="إجراءات المراجعة">
+    <FormCard title="إجراءات المراجعة" hint="انقل الحالة بعد مراجعة البيانات والشواهد.">
       <label className="label">
         ملاحظة المراجعة
         <textarea
