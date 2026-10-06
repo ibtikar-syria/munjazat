@@ -1,10 +1,8 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { type FormEvent, useState } from 'react'
 import { EmailField } from '../components/form/EmailField'
-import { SearchableSelectField } from '../components/form/SearchableSelectField'
+import { TurkeyLocationFields } from '../components/form/TurkeyLocationFields'
 import { api } from '../lib/api'
 import { isValidEmail } from '../utils/email'
-
-type City = { id: string; nameAr: string; nameEn?: string | null; contactPoint: string }
 
 const statusLabels: Record<string, string> = {
   submitted: 'مُقدَّم',
@@ -17,40 +15,25 @@ const statusLabels: Record<string, string> = {
 }
 
 export function SubmitPage() {
-  const [cities, setCities] = useState<City[]>([])
   const [entityKind, setEntityKind] = useState<'person' | 'organization' | 'achievement'>('person')
   const [title, setTitle] = useState('')
   const [details, setDetails] = useState('')
   const [submitterName, setSubmitterName] = useState('')
   const [submitterEmail, setSubmitterEmail] = useState('')
-  const [cityId, setCityId] = useState('')
+  const [location, setLocation] = useState({ region: '', city: '' })
   const [consent, setConsent] = useState(false)
   const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  useEffect(() => {
-    void api
-      .cities()
-      .then((res) => setCities(res.items))
-      .catch(() => setCities([]))
-  }, [])
-
-  const cityOptions = useMemo(
-    () =>
-      cities.map((city) => ({
-        value: city.id,
-        label: city.nameAr,
-        secondaryLabel: city.nameEn || undefined,
-        searchText: `${city.nameAr} ${city.nameEn ?? ''} ${city.contactPoint}`,
-      })),
-    [cities],
-  )
-
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     if (!isValidEmail(submitterEmail)) {
       setError('البريد الإلكتروني غير صالح. اكتب الصيغة الصحيحة مثل: name@gmail.com')
+      return
+    }
+    if (!location.region || !location.city) {
+      setError('اختر المحافظة ثم المدينة')
       return
     }
     if (!consent) {
@@ -65,17 +48,22 @@ export function SubmitPage() {
         entityKind,
         submitterName,
         submitterEmail,
-        cityId: cityId || undefined,
+        region: location.region,
+        city: location.city,
         consent: true,
         payload: {
           title,
           details,
           summary: details || title,
+          country: 'TR',
+          region: location.region,
+          city: location.city,
         },
       })
       setResult(`رمز التتبع: ${res.trackingCode}`)
       setTitle('')
       setDetails('')
+      setLocation({ region: '', city: '' })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذّر الإرسال')
     } finally {
@@ -127,15 +115,7 @@ export function SubmitPage() {
             />
           </label>
 
-          <SearchableSelectField
-            id="city"
-            label="المدينة"
-            placeholder="ابحث عن المدينة…"
-            emptyMessage="لا توجد مدينة مطابقة"
-            value={cityId}
-            options={cityOptions}
-            onChange={setCityId}
-          />
+          <TurkeyLocationFields value={location} onChange={setLocation} />
 
           <label className="label">
             اسم المقدّم

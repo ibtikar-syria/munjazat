@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { asc } from 'drizzle-orm'
-import { createDb } from '../db/client'
+import { createDb, type Db } from '../db/client'
 import { cities, entityTypes, sectors } from '../db/schema'
 import { createId } from '../lib/ids'
 import { requireAuth, requireRoles } from '../lib/auth'
+import { normalizePlaceKey, TURKEY_PROVINCES } from '../lib/turkeyProvinces'
 import type { AppEnv } from '../types'
-import type { ContactPointCode } from '../db/schema'
 
 const DEFAULT_SECTORS = [
   { nameAr: 'اقتصاد وأعمال', nameEn: 'Economy & Business' },
@@ -28,27 +28,29 @@ const DEFAULT_ENTITY_TYPES = [
   { nameAr: 'أخرى', nameEn: 'Other' },
 ]
 
-const DEFAULT_CITIES: Array<{
-  nameAr: string
-  nameEn: string
-  province: string
-  contactPoint: ContactPointCode
-}> = [
-  { nameAr: 'أنقرة', nameEn: 'Ankara', province: 'أنقرة', contactPoint: 'ankara' },
-  { nameAr: 'إسطنبول', nameEn: 'Istanbul', province: 'إسطنبول', contactPoint: 'istanbul' },
-  { nameAr: 'غازي عنتاب', nameEn: 'Gaziantep', province: 'غازي عنتاب', contactPoint: 'gaziantep' },
-  { nameAr: 'مرسين', nameEn: 'Mersin', province: 'مرسين', contactPoint: 'gaziantep' },
-  { nameAr: 'أضنة', nameEn: 'Adana', province: 'أضنة', contactPoint: 'gaziantep' },
-  { nameAr: 'بورصة', nameEn: 'Bursa', province: 'بورصة', contactPoint: 'istanbul' },
-  { nameAr: 'إزمير', nameEn: 'Izmir', province: 'إزمير', contactPoint: 'istanbul' },
-  { nameAr: 'قيصري', nameEn: 'Kayseri', province: 'قيصري', contactPoint: 'ankara' },
-  { nameAr: 'قونية', nameEn: 'Konya', province: 'قونية', contactPoint: 'ankara' },
-  { nameAr: 'أنطاليا', nameEn: 'Antalya', province: 'أنطاليا', contactPoint: 'istanbul' },
-  { nameAr: 'هطاي', nameEn: 'Hatay', province: 'هطاي', contactPoint: 'gaziantep' },
-  { nameAr: 'شانلي أورفا', nameEn: 'Şanlıurfa', province: 'شانلي أورفا', contactPoint: 'gaziantep' },
-  { nameAr: 'كلس', nameEn: 'Kilis', province: 'كلس', contactPoint: 'gaziantep' },
-  { nameAr: 'ماردين', nameEn: 'Mardin', province: 'ماردين', contactPoint: 'gaziantep' },
-]
+export async function ensureTurkeyProvinces(db: Db) {
+  const existing = await db.select().from(cities)
+  const keys = new Set(
+    existing.flatMap((row) =>
+      [normalizePlaceKey(row.nameEn), normalizePlaceKey(row.nameAr)].filter(Boolean),
+    ),
+  )
+
+  for (const province of TURKEY_PROVINCES) {
+    const names = [province.nameEn, province.nameAr, ...(province.aliases ?? [])]
+    if (names.some((name) => keys.has(normalizePlaceKey(name)))) continue
+
+    await db.insert(cities).values({
+      id: createId('cty'),
+      nameAr: province.nameAr,
+      nameEn: province.nameEn,
+      province: province.nameAr,
+      contactPoint: province.contactPoint,
+    })
+    keys.add(normalizePlaceKey(province.nameEn))
+    keys.add(normalizePlaceKey(province.nameAr))
+  }
+}
 
 export const taxonomyRoutes = new Hono<AppEnv>()
 
@@ -66,6 +68,7 @@ taxonomyRoutes.get('/entity-types', async (c) => {
 
 taxonomyRoutes.get('/cities', async (c) => {
   const db = createDb(c.env.DB)
+  await ensureTurkeyProvinces(db)
   const rows = await db.select().from(cities).orderBy(asc(cities.nameAr))
   return c.json({ items: rows })
 })
@@ -74,6 +77,7 @@ taxonomyRoutes.post('/seed', requireAuth(), requireRoles('embassy_admin'), async
   const db = createDb(c.env.DB)
   const [existingSectors] = await db.select().from(sectors).limit(1)
   if (existingSectors) {
+    await ensureTurkeyProvinces(db)
     return c.json({ seeded: false, message: 'التصنيفات موجودة مسبقاً' })
   }
 
@@ -93,15 +97,7 @@ taxonomyRoutes.post('/seed', requireAuth(), requireRoles('embassy_admin'), async
       sortOrder: i + 1,
     })
   }
-  for (const city of DEFAULT_CITIES) {
-    await db.insert(cities).values({
-      id: createId('cty'),
-      nameAr: city.nameAr,
-      nameEn: city.nameEn,
-      province: city.province,
-      contactPoint: city.contactPoint,
-    })
-  }
+  await ensureTurkeyProvinces(db)
 
   return c.json({ seeded: true })
 })

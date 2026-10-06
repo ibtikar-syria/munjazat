@@ -4,6 +4,12 @@ import { z } from 'zod'
 import { createDb } from '../db/client'
 import { cities, submissions } from '../db/schema'
 import { createId, createTrackingCode } from '../lib/ids'
+import {
+  contactPointFromTurkeyRegion,
+  findTurkeyProvince,
+  normalizePlaceKey,
+} from '../lib/turkeyProvinces'
+import { ensureTurkeyProvinces } from './taxonomies'
 import type { AppEnv } from '../types'
 import type { ContactPointCode, EntityKind } from '../db/schema'
 
@@ -13,6 +19,8 @@ const submitSchema = z.object({
   submitterEmail: z.string().email(),
   submitterPhone: z.string().optional(),
   cityId: z.string().optional(),
+  region: z.string().optional(),
+  city: z.string().optional(),
   payload: z.record(z.string(), z.unknown()),
   consent: z.literal(true),
 })
@@ -28,11 +36,44 @@ submissionRoutes.post('/', async (c) => {
 
   const data = parsed.data
   const db = createDb(c.env.DB)
+  await ensureTurkeyProvinces(db)
+
+  const region =
+    data.region?.trim() ||
+    (typeof data.payload.region === 'string' ? data.payload.region : '') ||
+    ''
+  const cityName =
+    data.city?.trim() || (typeof data.payload.city === 'string' ? data.payload.city : '') || ''
 
   let contactPoint: ContactPointCode | null = null
+
   if (data.cityId) {
     const [city] = await db.select().from(cities).where(eq(cities.id, data.cityId)).limit(1)
     contactPoint = city?.contactPoint ?? null
+  }
+
+  if (!contactPoint) {
+    const province = findTurkeyProvince(region)
+    if (province) {
+      const rows = await db.select().from(cities)
+      const match = rows.find((row) => {
+        const keys = [row.nameEn, row.nameAr].map((name) => normalizePlaceKey(name))
+        return (
+          keys.includes(normalizePlaceKey(province.nameEn)) ||
+          keys.includes(normalizePlaceKey(province.nameAr))
+        )
+      })
+      contactPoint = match?.contactPoint ?? province.contactPoint
+    } else {
+      contactPoint = contactPointFromTurkeyRegion(region)
+    }
+  }
+
+  const payload = {
+    ...data.payload,
+    country: 'TR',
+    region: region || undefined,
+    city: cityName || undefined,
   }
 
   const trackingCode = createTrackingCode()
@@ -45,7 +86,7 @@ submissionRoutes.post('/', async (c) => {
     submitterName: data.submitterName,
     submitterEmail: data.submitterEmail.toLowerCase(),
     submitterPhone: data.submitterPhone,
-    payloadJson: JSON.stringify(data.payload),
+    payloadJson: JSON.stringify(payload),
     status: contactPoint ? 'cp_review' : 'submitted',
     contactPoint,
   })
