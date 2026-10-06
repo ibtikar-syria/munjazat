@@ -52,7 +52,7 @@ authRoutes.post('/login', async (c) => {
     httpOnly: true,
     sameSite: 'Lax',
     path: '/',
-    secure: c.env.ENVIRONMENT === 'production',
+    secure: c.req.url.startsWith('https'),
     maxAge: 60 * 60 * 24 * 14,
   })
 
@@ -83,9 +83,6 @@ authRoutes.get('/me', requireAuth(), async (c) => {
 })
 
 authRoutes.post('/bootstrap-admin', async (c) => {
-  if (c.env.ENVIRONMENT === 'production') {
-    return c.json({ error: 'غير متاح في الإنتاج' }, 403)
-  }
   const db = createDb(c.env.DB)
   const [existing] = await db.select().from(users).limit(1)
   if (existing) {

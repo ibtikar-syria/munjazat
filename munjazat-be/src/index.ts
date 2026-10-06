@@ -12,22 +12,30 @@ import type { AppEnv } from './types'
 const app = new Hono<AppEnv>()
 
 app.use('*', logger())
-app.use(
-  '*',
-  cors({
-    origin: (origin) => origin || 'http://localhost:5173',
+app.use('*', async (c, next) => {
+  const allowed = (c.env.CORS_ALLOW_ORIGINS || c.env.FRONTEND_BASE_URL || 'http://localhost:5173')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const corsMiddleware = cors({
+    origin: (origin) => {
+      if (!origin) return allowed[0] || 'http://localhost:5173'
+      return allowed.includes(origin) ? origin : allowed[0] || 'http://localhost:5173'
+    },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
-  }),
-)
+  })
+
+  return corsMiddleware(c, next)
+})
 app.use('*', loadSession)
 
 app.get('/api/health', (c) =>
   c.json({
     ok: true,
     app: c.env.APP_NAME ?? 'منجزات',
-    environment: c.env.ENVIRONMENT ?? 'development',
   }),
 )
 
