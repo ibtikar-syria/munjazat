@@ -7,9 +7,11 @@ import { SubmitPage, TrackPage } from './pages/SubmitTrackPages'
 import { AchievementDetailPage, BrowsePage } from './pages/BrowsePages'
 import {
   DashboardHome,
-  DashboardPlaceholder,
   RequireAuth,
 } from './pages/DashboardPages'
+import { QueuePage } from './pages/QueuePage'
+import { DirectoryPage } from './pages/DirectoryPage'
+import { GovernancePage } from './pages/GovernancePage'
 
 export default function App() {
   return (
@@ -34,33 +36,10 @@ export default function App() {
             }
           >
             <Route index element={<DashboardHome />} />
-            <Route
-              path="queue"
-              element={
-                <DashboardPlaceholder
-                  title="طوابير المراجعة"
-                  body="هنا ستظهر طلبات نقاط الاتصال واللجنة حسب الحالة والتعيين الجغرافي."
-                />
-              }
-            />
-            <Route
-              path="directory"
-              element={
-                <DashboardPlaceholder
-                  title="الدليل الداخلي"
-                  body="سجل الكفاءات والجهات والمنجزات الموثّقة مع التصنيف القطاعي والجغرافي."
-                />
-              }
-            />
-            <Route
-              path="governance"
-              element={
-                <DashboardPlaceholder
-                  title="الحوكمة"
-                  body="إدارة المستخدمين والدعوات والتصنيفات وسجل التدقيق وسياسة النشر."
-                />
-              }
-            />
+            <Route path="queue" element={<QueuePage />} />
+            <Route path="queue/:id" element={<QueuePage />} />
+            <Route path="directory" element={<DirectoryPage />} />
+            <Route path="governance" element={<GovernancePage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

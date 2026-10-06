@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import iqabMark from '../assets/iqab.svg'
 import { useAuth } from '../lib/auth'
+import { roleLabels } from '../lib/labels'
 
 function PublicNavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
@@ -241,7 +242,7 @@ export function DashboardLayout() {
             <div className="min-w-0 text-sm text-[var(--color-muted)]">
               <span className="truncate font-medium text-[var(--color-ink)]">{user?.name}</span>
               <span className="mx-2 text-[var(--color-line)]">·</span>
-              <span className="text-[var(--color-forest)]">{user?.role}</span>
+              <span className="text-[var(--color-forest)]">{roleLabels[user?.role ?? ''] ?? user?.role}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Link to="/" className="btn-secondary !px-3 !py-1.5 hidden sm:inline-flex">
