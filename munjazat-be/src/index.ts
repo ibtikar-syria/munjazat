@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { secureHeaders } from 'hono/secure-headers'
 import { loadSession } from './lib/auth'
 import { authRoutes } from './routes/auth'
 import { taxonomyRoutes } from './routes/taxonomies'
@@ -12,6 +13,15 @@ import type { AppEnv } from './types'
 const app = new Hono<AppEnv>()
 
 app.use('*', logger())
+app.use(
+  '*',
+  secureHeaders({
+    xFrameOptions: 'DENY',
+    xContentTypeOptions: 'nosniff',
+    referrerPolicy: 'no-referrer',
+    crossOriginResourcePolicy: false,
+  }),
+)
 app.use('*', async (c, next) => {
   const allowed = (c.env.CORS_ALLOW_ORIGINS || c.env.FRONTEND_BASE_URL || 'http://localhost:5173')
     .split(',')
@@ -21,7 +31,7 @@ app.use('*', async (c, next) => {
   const corsMiddleware = cors({
     origin: (origin) => {
       if (!origin) return allowed[0] || 'http://localhost:5173'
-      return allowed.includes(origin) ? origin : allowed[0] || 'http://localhost:5173'
+      return allowed.includes(origin) ? origin : null
     },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

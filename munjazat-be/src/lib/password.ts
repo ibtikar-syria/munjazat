@@ -31,7 +31,16 @@ export async function verifyPassword(password: string, stored: string) {
     key,
     256,
   )
-  return toHex(bits) === hashHex
+  return timingSafeEqual(toHex(bits), hashHex)
+}
+
+function timingSafeEqual(a: string, b: string) {
+  if (a.length !== b.length) return false
+  const left = encoder.encode(a)
+  const right = encoder.encode(b)
+  let diff = 0
+  for (let i = 0; i < left.length; i++) diff |= left[i] ^ right[i]
+  return diff === 0
 }
 
 export async function hashToken(token: string) {

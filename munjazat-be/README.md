@@ -12,6 +12,10 @@ npm run dev
 
 API listens on `http://127.0.0.1:8787`.
 
+Copy `.dev.vars.example` to `.dev.vars` and set `JWT_SECRET` to a long random string (`openssl rand -base64 48`). Do not commit `.dev.vars`.
+
+On Cloudflare, store the same name as a Worker secret (`JWT_SECRET`), matching VMS. GitHub Environments should define secret `JWT_SECRET`, not a public variable.
+
 ### Useful endpoints
 
 - `GET /api/health`

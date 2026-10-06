@@ -40,7 +40,7 @@ jobs:
           | .vars.FRONTEND_BASE_URL = $frontendBaseUrl
           | .vars.CORS_ALLOW_ORIGINS = $corsAllowOrigins
           | .account_id = $accountId
-          | del(.vars.SESSION_SECRET)
+          | del(.vars.JWT_SECRET)
           | del(.kv_namespaces)'
 
           jq \
@@ -63,7 +63,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          echo "${{ secrets.SESSION_SECRET }}" | wrangler secret put SESSION_SECRET --config wrangler.local.jsonc --name ${{ vars.THIS_APP_NAME_BE }}
+          echo "${{ secrets.JWT_SECRET }}" | wrangler secret put JWT_SECRET --config wrangler.local.jsonc --name ${{ vars.THIS_APP_NAME_BE }}
 
       - name: Migrate D1 Database
         env:

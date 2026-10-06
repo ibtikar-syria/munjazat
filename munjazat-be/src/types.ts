@@ -4,7 +4,7 @@ export type Env = {
   APP_NAME: string
   FRONTEND_BASE_URL?: string
   CORS_ALLOW_ORIGINS?: string
-  SESSION_SECRET?: string
+  JWT_SECRET: string
 }
 
 export type AppVariables = {

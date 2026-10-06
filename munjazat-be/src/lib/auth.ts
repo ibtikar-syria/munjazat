@@ -3,47 +3,40 @@ import type { Context, Next } from 'hono'
 import { getCookie } from 'hono/cookie'
 import { createDb } from '../db/client'
 import { sessions, users } from '../db/schema'
-import { hashToken } from './password'
+import { AUTH_COOKIE, getJwtSecret, readBearerToken, verifyStaffJwt } from './jwt'
 import type { AppEnv } from '../types'
 
-export const SESSION_COOKIE = 'munjazat_session'
+export { AUTH_COOKIE }
 
 export async function loadSession(c: Context<AppEnv>, next: Next) {
   c.set('user', null)
-  const token = getCookie(c, SESSION_COOKIE)
+  const token = getCookie(c, AUTH_COOKIE) || readBearerToken(c.req.header('Authorization'))
   if (!token) return next()
 
-  const db = createDb(c.env.DB)
-  const tokenHash = await hashToken(token)
-  const rows = await db
-    .select({
-      sessionId: sessions.id,
-      expiresAt: sessions.expiresAt,
-      userId: users.id,
-      email: users.email,
-      name: users.name,
-      role: users.role,
-      contactPoint: users.contactPoint,
-      active: users.active,
-    })
-    .from(sessions)
-    .innerJoin(users, eq(sessions.userId, users.id))
-    .where(eq(sessions.tokenHash, tokenHash))
-    .limit(1)
+  const secret = getJwtSecret(c.env.JWT_SECRET)
+  if (!secret) return next()
 
-  const row = rows[0]
-  if (!row || !row.active) return next()
-  if (new Date(row.expiresAt).getTime() < Date.now()) {
-    await db.delete(sessions).where(eq(sessions.id, row.sessionId))
+  const claims = await verifyStaffJwt(token, secret)
+  if (!claims) return next()
+
+  const db = createDb(c.env.DB)
+  const [session] = await db.select().from(sessions).where(eq(sessions.id, claims.jti)).limit(1)
+  if (!session) return next()
+  if (new Date(session.expiresAt).getTime() < Date.now()) {
+    await db.delete(sessions).where(eq(sessions.id, session.id))
     return next()
   }
+  if (session.userId !== claims.sub) return next()
+
+  const [user] = await db.select().from(users).where(eq(users.id, session.userId)).limit(1)
+  if (!user || !user.active) return next()
 
   c.set('user', {
-    id: row.userId,
-    email: row.email,
-    name: row.name,
-    role: row.role,
-    contactPoint: row.contactPoint,
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    contactPoint: user.contactPoint,
   })
   return next()
 }

@@ -6,17 +6,43 @@ import { createDb } from '../db/client'
 import { sessions, users } from '../db/schema'
 import { createId } from '../lib/ids'
 import { hashPassword, hashToken, verifyPassword } from '../lib/password'
-import { SESSION_COOKIE, requireAuth } from '../lib/auth'
+import { AUTH_COOKIE, requireAuth } from '../lib/auth'
+import {
+  JWT_TTL_SECONDS,
+  getJwtSecret,
+  readBearerToken,
+  signStaffJwt,
+  verifyStaffJwt,
+} from '../lib/jwt'
 import type { AppEnv } from '../types'
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(8).max(128),
 })
+
+const DUMMY_PASSWORD_HASH =
+  'pbkdf2$100000$00000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000'
+
+function cookieOptions(c: { req: { url: string } }) {
+  const secure = new URL(c.req.url).protocol === 'https:'
+  return {
+    httpOnly: true,
+    sameSite: 'Lax' as const,
+    path: '/',
+    secure,
+    maxAge: JWT_TTL_SECONDS,
+  }
+}
 
 export const authRoutes = new Hono<AppEnv>()
 
 authRoutes.post('/login', async (c) => {
+  const secret = getJwtSecret(c.env.JWT_SECRET)
+  if (!secret) {
+    return c.json({ error: 'إعداد الخادم غير مكتمل' }, 500)
+  }
+
   const body = await c.req.json().catch(() => null)
   const parsed = loginSchema.safeParse(body)
   if (!parsed.success) {
@@ -28,33 +54,27 @@ authRoutes.post('/login', async (c) => {
   const [user] = await db
     .select()
     .from(users)
-    .where(eq(users.email, email.toLowerCase()))
+    .where(eq(users.email, email.toLowerCase().trim()))
     .limit(1)
 
-  if (!user || !user.active) {
+  const ok = await verifyPassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH)
+  if (!user || !user.active || !ok) {
     return c.json({ error: 'بيانات الدخول غير صحيحة' }, 401)
   }
-  const ok = await verifyPassword(password, user.passwordHash)
-  if (!ok) return c.json({ error: 'بيانات الدخول غير صحيحة' }, 401)
 
-  const token = `${crypto.randomUUID()}${crypto.randomUUID()}`
-  const tokenHash = await hashToken(token)
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString()
+  const sessionId = createId('ses')
+  const token = await signStaffJwt(secret, user.id, sessionId)
+  const tokenHash = await hashToken(sessionId)
+  const expiresAt = new Date(Date.now() + JWT_TTL_SECONDS * 1000).toISOString()
 
   await db.insert(sessions).values({
-    id: createId('ses'),
+    id: sessionId,
     userId: user.id,
     tokenHash,
     expiresAt,
   })
 
-  setCookie(c, SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: 'Lax',
-    path: '/',
-    secure: c.req.url.startsWith('https'),
-    maxAge: 60 * 60 * 24 * 14,
-  })
+  setCookie(c, AUTH_COOKIE, token, cookieOptions(c))
 
   return c.json({
     user: {
@@ -68,13 +88,16 @@ authRoutes.post('/login', async (c) => {
 })
 
 authRoutes.post('/logout', async (c) => {
-  const token = getCookie(c, SESSION_COOKIE)
-  if (token) {
-    const db = createDb(c.env.DB)
-    const tokenHash = await hashToken(token)
-    await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash))
+  const secret = getJwtSecret(c.env.JWT_SECRET)
+  const token = getCookie(c, AUTH_COOKIE) || readBearerToken(c.req.header('Authorization'))
+  if (token && secret) {
+    const claims = await verifyStaffJwt(token, secret)
+    if (claims) {
+      const db = createDb(c.env.DB)
+      await db.delete(sessions).where(eq(sessions.id, claims.jti))
+    }
   }
-  deleteCookie(c, SESSION_COOKIE, { path: '/' })
+  deleteCookie(c, AUTH_COOKIE, { path: '/', secure: new URL(c.req.url).protocol === 'https:' })
   return c.json({ ok: true })
 })
 

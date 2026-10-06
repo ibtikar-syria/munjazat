@@ -10,7 +10,7 @@ Create GitHub Environments: `dev` and `main`.
 | Name | Purpose |
 |---|---|
 | `CLOUDFLARE_API_TOKEN` | Wrangler deploy + D1 migrate |
-| `SESSION_SECRET` | Backend session signing (like VMS `JWT_SECRET`) |
+| `JWT_SECRET` | Backend JWT signing secret (HS256). Use a long random value, never commit it. |
 
 ## Variables (per environment)
 
