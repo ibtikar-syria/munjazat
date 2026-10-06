@@ -1,3 +1,4 @@
+import { EvidenceFileGrid } from '../components/form/FileUploadGrid'
 import { FormCard } from '../components/form/FormCard'
 import { LinkPreviewCard } from '../components/form/LinkPreviewCard'
 import type { DashboardSubmissionDetail, RelatedLink } from '../lib/api'
@@ -88,18 +89,9 @@ export function QueueEvidenceCard({ detail }: { detail: DashboardSubmissionDetai
         </div>
         <div>
           <dt className="text-[var(--color-muted)]">وسائط ذات صلة</dt>
-          <dd className="mt-1 space-y-1">
+          <dd className="mt-1">
             {detail.media?.length ? (
-              detail.media.map((file) => (
-                <a
-                  key={file.id}
-                  href={`/api/dashboard/evidence/${encodeURIComponent(file.id)}`}
-                  className="block text-[var(--color-forest)] underline-offset-2 hover:underline"
-                >
-                  {file.fileName}
-                  {file.sizeBytes != null ? ` · ${(file.sizeBytes / (1024 * 1024)).toFixed(1)} م.ب` : ''}
-                </a>
-              ))
+              <EvidenceFileGrid items={detail.media} />
             ) : (
               <span className="text-[var(--color-muted)]">لا توجد ملفات.</span>
             )}

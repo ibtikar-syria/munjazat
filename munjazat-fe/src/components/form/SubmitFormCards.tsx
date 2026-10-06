@@ -1,4 +1,5 @@
 import { EmailField } from './EmailField'
+import { FileUploadGrid } from './FileUploadGrid'
 import { FormCard } from './FormCard'
 import { LinkPreviewCard } from './LinkPreviewCard'
 import { TurkeyLocationFields } from './TurkeyLocationFields'
@@ -133,36 +134,10 @@ export function SubmitEvidenceCard({
         <p className="mt-1 text-xs text-[var(--color-muted)]">
           صور، فيديو، صوت، أو مستندات. الحد الأقصى لمجموع الملفات 100 ميغابايت.
         </p>
-        <input
-          className="field"
-          type="file"
-          multiple
-          onChange={(e) => {
-            onAddMedia(e.target.files)
-            e.target.value = ''
-          }}
-        />
+        <FileUploadGrid files={mediaFiles} formatBytes={formatBytes} onAdd={onAddMedia} onRemove={onRemoveMedia} />
         <p className="mt-2 text-xs text-[var(--color-muted)]">
           {formatBytes(mediaBytes)} من 100 م.ب · {mediaFiles.length} ملف
         </p>
-        {mediaFiles.length ? (
-          <ul className="mt-3 space-y-2">
-            {mediaFiles.map((file) => (
-              <li
-                key={`${file.name}-${file.size}`}
-                className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-line)] px-3 py-2 text-sm"
-              >
-                <span className="min-w-0 truncate">
-                  {file.name}
-                  <span className="mr-2 text-[var(--color-muted)]">{formatBytes(file.size)}</span>
-                </span>
-                <button type="button" className="shrink-0 text-xs text-red-700" onClick={() => onRemoveMedia(file)}>
-                  حذف
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : null}
       </div>
     </FormCard>
   )
